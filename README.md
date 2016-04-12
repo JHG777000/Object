@@ -1,6 +1,6 @@
 # Object
 
-Object is an object-oriented framework that enables dynamic and explict object-oriented programming in C.
+Object is an object-oriented framework that enables dynamic and explicit object-oriented programming in C.
 Basically, Objective-C via macros.
 
 --Features:
