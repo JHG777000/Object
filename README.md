@@ -24,3 +24,5 @@ Support for subclasses(multiple inheritance).
 Support for private classes.
 
 Support for manual memory management, manual reference counting, run-time automatic reference counting.
+
+Dependencies: RKMem.
