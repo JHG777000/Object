@@ -25,4 +25,6 @@ Support for private classes.
 
 Support for manual memory management, manual reference counting, run-time automatic reference counting.
 
-Dependencies: RKMem.
+Header files are not needed for classes.
+
+Dependencies: RKMem, from RKLib.
