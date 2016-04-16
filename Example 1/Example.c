@@ -12,7 +12,7 @@ use_class(TestClass) ;
 
 use_class(StringClass) ;
 
-int main(int argc, const char * argv[]) {
+void Exmaple1( void ) {
     
     TestClass myobject = new_object(TestClass, 10.0) ;
     
@@ -45,7 +45,6 @@ int main(int argc, const char * argv[]) {
     }
     
     free_object(string) ;
-    
-    return 0 ;
+
 }
 

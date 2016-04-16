@@ -129,7 +129,7 @@ typedef struct Obj##classname##_s* classname
 #define use_private_class(classname) static obj_class Def##classname( int mode, obj_class subclass ) ; \
 typedef struct Obj##classname##_s* classname
 
-#define use_static_method(methodname) void methodname(va_list external_arglist, const AnyClass obj, ...)
+#define use_static_method(methodname) int methodname(va_list external_arglist, const AnyClass obj, ...)
 
 #define make_method_public(method) obj_add_method(method,#method,cls)
 
@@ -230,6 +230,12 @@ method_args\
 
 #define null_method_error -1
 
+#define return_error_from_method return -2
+
+#define method_returned_error -2
+
+#define return_from_method return 1
+
 #define get_method(obj,method) obj_get_method(obj,#method)
 
 #define get_class_method(cls,method) obj_get_class_method(cls,#method)
@@ -291,6 +297,53 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class(obj,cls)
+
+#define define_record_type(recordtype,...) typedef struct recordtype##_s { __VA_ARGS__ } *recordtype
+
+#define new_record(recordtype) RKMem_NewMemOfType(struct recordtype##_s)
+
+#define store_record(name,record) store_pointer(obj,name,record)
+
+#define get_record(name,recordtype) ((recordtype)get_pointer(obj,name))
+
+#define define_data_set(dataset,...) define_record_type(dataset##type,__VA_ARGS__)
+
+#define store_set(dataset) dataset##type dataset##tmp = new_record( dataset##type );\
+store_record(dataset, dataset##tmp)
+
+#define get_set(dataset) get_record(dataset, dataset##type)
+
+#define destroy_set(dataset) free(get_set(dataset))
+
+#define send_object_msg(obj,msg,...) obj_get_method(obj,msg)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+
+#define send_object_msg_with_arglist(obj,msg,arglist,...) obj_get_method(obj,msg)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+
+#define som(obj,msg,...) send_object_msg(obj,msg,__VA_ARGS__)
+
+#define soma(obj,msg,arglist,...) send_object_msg_with_arglist(obj,msg,arglist,__VA_ARGS__)
+
+#define store_object_with_msg(object1,msg,object2) obj_store_object(object1,object2,msg,1)
+
+#define store_weak_object_with_msg(object1,msg,object2) obj_store_object(object1,object2,msg,0)
+
+#define get_object_with_msg(object, msg) obj_get_object(object, msg)
+
+#define store_pointer_with_msg(object,msg,pointer) obj_store_pointer(object,pointer,msg)
+
+#define get_pointer_with_msg(object,msg) obj_get_pointer(object,msg)
+
+#define class_store_pointer_with_msg(class,msg,pointer) obj_class_store_pointer(class,pointer,msg)
+
+#define class_get_pointer_with_msg(class,msg) obj_class_get_pointer(class,msg)
+
+#define static_method_invoke(method,...) $$(NULL,method,__VA_ARGS__)
+
+#define static_method_invoke_with_arglist(method,arglist,...) $$$$(NULL,method,arglist,__VA_ARGS__)
+
+#define smi(method,...) static_method_invoke(method,__VA_ARGS__)
+
+#define smia(method,...) static_method_invoke_with_arglist(method,__VA_ARGS__)
 
 int obj_default_func(va_list external_arglist, const AnyClass obj, ...) ;
 

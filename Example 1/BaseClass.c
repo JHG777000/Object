@@ -8,7 +8,6 @@
 
 #include "obj.h"
 
-
 start_method(my_init_method,)
 
 end_method
