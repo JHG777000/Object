@@ -17,31 +17,31 @@ void Exmaple2( void ) {
     
     AnyClass circle = NULL ;
     
-    smi(ShapeFactory, "Circle", &circle, 0.0f, 0.0f, 4.0f) ;
+    sm(ShapeFactory, "Circle", &circle, 0.0f, 0.0f, 4.0f) ;
     
-    $(circle, get area, &area) ;
+    m(circle, get area, &area) ;
     
     printf("Area: %f\n", area) ;
     
     
     AnyClass square = NULL ;
     
-    smi(ShapeFactory, "Square", &square, 0.0f, 0.0f, 2.0f) ;
+    sm(ShapeFactory, "Square", &square, 0.0f, 0.0f, 2.0f) ;
     
-    $(square, get area, &area) ;
+    m(square, get area, &area) ;
     
     printf("Area: %f\n", area) ;
     
     
     AnyClass rectangle = NULL ;
     
-    smi(ShapeFactory, "Rectangle", &rectangle, 0.0f, 0.0f, 5.0f, 2.0) ;
+    sm(ShapeFactory, "Rectangle", &rectangle, 0.0f, 0.0f, 5.0f, 2.0) ;
     
-    $(rectangle, get area, &area) ;
+    m(rectangle, get area, &area) ;
     
     printf("Area: %f\n", area) ;
 
     
-    smi(ShapeFactory, "Destroy") ;
+    sm(ShapeFactory, "Destroy") ;
     
 }

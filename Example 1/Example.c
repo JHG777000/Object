@@ -16,27 +16,27 @@ void Exmaple1( void ) {
     
     TestClass myobject = new_object(TestClass, 10.0) ;
     
-    $(myobject, my_first_method, 7) ;
+    m(myobject, my_first_method, 7) ;
     
-    $(myobject, my_method, 10, 33) ;
+    m(myobject, my_method, 10, 33) ;
     
-    $(myobject, print_hello, noargs) ;
+    m(myobject, print_hello, noargs) ;
     
     free_object(myobject) ;
     
     StringClass string = new_object(StringClass, "This is my String!\n") ;
     
-    $(string,print,noargs) ;
+    m(string,print,noargs) ;
     
     obj_long size = 0 ;
     
-    $(string, get the size of the string, &size) ;
+    m(string, get the size of the string, &size) ;
     
     printf("%ld\n",size) ;
     
-    $(string, print size of the object on the stack in bytes, noargs) ;
+    m(string, print size of the object on the stack in bytes, noargs) ;
     
-    if (!$(string, hello world, noargs)) {
+    if (!m(string, hello world, noargs)) {
         
         printf("hello world: not found! \n") ;
         

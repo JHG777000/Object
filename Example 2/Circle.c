@@ -18,21 +18,21 @@ define_data_set(CircleData, float radius ; ) ;
 
 start_method(InitCircle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(radius, obj_float))
 
- iclass$(obj, get_cls_for(Circle), InitShape, noargs) ;
+ iclass1(obj, get_cls_for(Circle), InitShape, noargs) ;
 
  store_set(CircleData) ;
 
- $(obj, set pos, pos_x, pos_y) ;
+ m(obj, set pos, pos_x, pos_y) ;
 
- $(obj, set radius, radius) ;
+ m(obj, set radius, radius) ;
 
- $(obj, compute area, noargs) ;
+ m(obj, compute area, noargs) ;
 
 end_method
 
 start_method(DeinitCircle, )
 
- iclass$(obj, get_cls_for(Circle), DeinitShape, noargs) ;
+ iclass1(obj, get_cls_for(Circle), DeinitShape, noargs) ;
 
  destroy_set(CircleData) ;
 
@@ -52,7 +52,7 @@ end_method
 
 start_method(compute_area, )
 
- $(obj, set area, get_set(CircleData)->radius * get_set(CircleData)->radius * M_PI) ;
+ m(obj, set area, get_set(CircleData)->radius * get_set(CircleData)->radius * M_PI) ;
 
 end_method
 

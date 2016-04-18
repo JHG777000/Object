@@ -24,7 +24,7 @@ struct obj_ref_s { int strong ; object obj ; object base_obj ; } ;
 
 typedef struct obj_ref_s* obj_ref ;
 
- int obj_default_func(va_list external_arglist, const AnyClass obj, ...) {
+ obj_long obj_default_func(va_list external_arglist, const AnyClass obj, ...) {
     
     return 0 ;
 }
@@ -45,7 +45,7 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
     start_arglist(arglist, the_classdef) ;
     
-    $$$(obj, init, arglist, noargs) ;
+    ma(obj, init, arglist, noargs) ;
     
     end_arglist(arglist) ;
     
@@ -65,7 +65,7 @@ void obj_object_dealloc( AnyClass obj ) {
     
     object obj_ = (object)obj ;
     
-    $(obj,deinit,noargs) ;
+    m(obj,deinit,noargs) ;
     
     obj_->class_of_object->the_classdef(-1, NULL) ;
     

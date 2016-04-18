@@ -25,10 +25,6 @@ typedef void* AnyClass ;
 
 typedef obj_class (*obj_classdef)(int mode, obj_class subclass) ;
 
-typedef int (*obj_method)(va_list external_arglist, const AnyClass obj, ...) ;
-
-typedef int (*obj_classmethod)(va_list external_arglist, const AnyClass obj, const obj_class cls, ...) ;
-
 typedef struct { void* fast_data_structure ; } *obj_fds_type ;
 
 typedef double obj_float ;
@@ -54,6 +50,12 @@ typedef unsigned long obj_ulong ;
 #endif
 
 typedef va_list obj_arglist ;
+
+
+typedef obj_long (*obj_method)(va_list external_arglist, const AnyClass obj, ...) ;
+
+typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, const obj_class cls, ...) ;
+
 
 #define obj_bitsizeof(type) sizeof(type) * CHAR_BIT
 
@@ -123,13 +125,15 @@ static void classname##_init_method(const obj_class cls)
 
 #define get_cls_for(class) class##_cls
 
+
 #define use_class(classname) obj_class Def##classname( int mode, obj_class subclass ) ; \
 typedef struct Obj##classname##_s* classname
 
 #define use_private_class(classname) static obj_class Def##classname( int mode, obj_class subclass ) ; \
 typedef struct Obj##classname##_s* classname
 
-#define use_static_method(methodname) int methodname(va_list external_arglist, const AnyClass obj, ...)
+#define use_static_method(methodname) obj_long methodname(va_list external_arglist, const AnyClass obj, ...)
+
 
 #define make_method_public(method) obj_add_method(method,#method,cls)
 
@@ -147,6 +151,7 @@ typedef struct Obj##classname##_s* classname
 
 #define make_class_method_final(methodname) obj_add_final_class_method(#methodname,cls)
 
+
 #define new_object(class,...) (class)obj_object_alloc(Def##class,__VA_ARGS__)
 
 #define new_any_object(class,...) obj_object_alloc(Def##class,__VA_ARGS__)
@@ -156,6 +161,7 @@ typedef struct Obj##classname##_s* classname
 #define free_object(obj) obj_object_dealloc((AnyClass)obj)
 
 #define get_classdef(class) Def##class
+
 
 #define store_object_strong(object1,name,object2) obj_store_object(object1,object2,#name,1)
 
@@ -185,9 +191,11 @@ typedef struct Obj##classname##_s* classname
 
 #define class_gp(class,name) obj_class_get_pointer(class,name)
 
+
 #define add_ref_count(object) obj_add_ref_count(object)
 
 #define sub_ref_count(object) obj_sub_ref_count(object)
+
 
 #define arg(name,type) type name = va_arg(method_arglist,type) ;
 
@@ -197,7 +205,7 @@ name = va_arg(external_arglist,type) ;\
 
 #define noargs 0
 
-#define start_method(method_name,method_args) static int method_name(va_list external_arglist, const AnyClass obj,...) {\
+#define start_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj,...) {\
 va_list method_arglist ;\
 va_start(method_arglist,obj) ;\
 arg(obj_nullptr,void * const)\
@@ -205,14 +213,14 @@ if (obj_nullptr != NULL) return -1 ;\
 method_args\
 
 // static method equals non static function
-#define start_static_method(method_name,method_args) int method_name(va_list external_arglist, const AnyClass obj,...) {\
+#define start_static_method(method_name,method_args) obj_long method_name(va_list external_arglist, const AnyClass obj,...) {\
 va_list method_arglist ;\
 va_start(method_arglist,obj) ;\
 arg(obj_nullptr,void * const)\
 if (obj_nullptr != NULL) return -1 ;\
 method_args\
 
-#define start_class_method(method_name,method_args) static int method_name(va_list external_arglist, const AnyClass obj, const obj_class cls,...) {\
+#define start_class_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj, const obj_class cls,...) {\
 va_list method_arglist ;\
 va_start(method_arglist,cls) ;\
 if (cls == NULL) {printf("Object Runtime: Error, access control violation or corrupted 'cls' pointer.\n");exit(EXIT_FAILURE);}\
@@ -225,6 +233,7 @@ method_args\
 #define start_arglist(arglist, last_arg) va_start(arglist, last_arg)
 
 #define end_arglist(arglist) va_end(arglist)
+
 
 #define get_null_method obj_default_func
 
@@ -240,37 +249,55 @@ method_args\
 
 #define get_class_method(cls,method) obj_get_class_method(cls,#method)
 
-#define $(obj,method,...) obj_get_method(obj,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 
-#define $$(obj,method,...) method(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define method_invoke(obj,method,...) obj_get_method(obj,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define m(obj,method,...) method_invoke(obj,method,__VA_ARGS__)
 
-#define $$$(obj,method,arglist,...) obj_get_method(obj,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define method_invoke_with_arglist(obj,method,arglist,...) obj_get_method(obj,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define ma(obj,method,arglist,...) method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define $$$$(obj,method,arglist,...) method(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define private_method_invoke(obj,method,...) method(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define pm(obj,method,...) private_method_invoke(obj,method,__VA_ARGS__)
 
-#define class$(obj,method,...) ((obj_classmethod)obj_get_class_method(cls,#method))(NULL,(AnyClass)obj,cls,__VA_ARGS__)
+#define private_method_invoke_with_arglist(obj,method,arglist,...) method(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define pma(obj,method,arglist,...) private_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define class$$(obj,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,cls,__VA_ARGS__)
+#define static_method_invoke(method,...) pm(NULL,method,__VA_ARGS__)
+#define sm(method,...) static_method_invoke(method,__VA_ARGS__)
 
-#define class$$$(obj,method,arglist,...) ((obj_classmethod)obj_get_class_method(cls,#method))(arglist,(AnyClass)obj,cls,__VA_ARGS__)
+#define static_method_invoke_with_arglist(method,arglist,...) pma(NULL,method,arglist,__VA_ARGS__)
+#define sma(method,...) static_method_invoke_with_arglist(method,__VA_ARGS__)
 
-#define class$$$$(obj,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,cls,__VA_ARGS__)
+#define class_method_invoke(obj,method,...) ((obj_classmethod)obj_get_class_method(cls,#method))(NULL,(AnyClass)obj,cls,__VA_ARGS__)
+#define cm(obj,method,...) class_method_invoke(obj,method,__VA_ARGS__)
 
-#define invoke_class$(obj,class,method,...) ((obj_classmethod)obj_get_class_method(class,#method))(NULL,(AnyClass)obj,class,__VA_ARGS__)
+#define class_method_invoke_with_arglist(obj,method,arglist,...) ((obj_classmethod)obj_get_class_method(cls,#method))(arglist,(AnyClass)obj,cls,__VA_ARGS__)
+#define cma(obj,method,arglist,...) class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define invoke_class$$(obj,class,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,class,__VA_ARGS__)
+#define private_class_method_invoke(obj,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,cls,__VA_ARGS__)
+#define pcm(obj,method,...) private_class_method_invoke(obj,method,__VA_ARGS__)
 
-#define invoke_class$$$(obj,class,method,arglist,...) ((obj_classmethod)obj_get_class_method(class,#method))(arglist,(AnyClass)obj,class,__VA_ARGS__)
+#define private_class_method_invoke_with_arglist(obj,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,cls,__VA_ARGS__)
+#define pcma(obj,method,arglist,...) class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define invoke_class$$$$(obj,class,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,class,__VA_ARGS__)
 
-#define iclass$(obj,class,method,...) invoke_class$(obj,class,method,__VA_ARGS__)
+#define invoke_class1(obj,class,method,...) ((obj_classmethod)obj_get_class_method(class,#method))(NULL,(AnyClass)obj,class,__VA_ARGS__)
 
-#define iclass$$(obj,class,method,...) invoke_class$$(obj,class,method,__VA_ARGS__)
+#define invoke_class2(obj,class,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,class,__VA_ARGS__)
 
-#define iclass$$$(obj,class,method,arglist,...) invoke_class$$$(obj,class,method,arglist,__VA_ARGS__)
+#define invoke_class3(obj,class,method,arglist,...) ((obj_classmethod)obj_get_class_method(class,#method))(arglist,(AnyClass)obj,class,__VA_ARGS__)
 
-#define iclass$$$$(obj,class,method,arglist,...) invoke_class$$$$(obj,class,method,arglist,__VA_ARGS__)
+#define invoke_class4(obj,class,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,class,__VA_ARGS__)
+
+
+#define iclass1(obj,class,method,...) invoke_class1(obj,class,method,__VA_ARGS__)
+
+#define iclass2(obj,class,method,...) invoke_class2(obj,class,method,__VA_ARGS__)
+
+#define iclass3(obj,class,method,arglist,...) invoke_class3(obj,class,method,arglist,__VA_ARGS__)
+
+#define iclass4(obj,class,method,arglist,...) invoke_class4(obj,class,method,arglist,__VA_ARGS__)
+
 
 #define fast_data_store ((obj_fds_type)obj)->fast_data_structure
 
@@ -296,7 +323,9 @@ method_args\
 
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
+
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class(obj,cls)
+
 
 #define define_record_type(recordtype,...) typedef struct recordtype##_s { __VA_ARGS__ } *recordtype
 
@@ -314,6 +343,7 @@ store_record(dataset, dataset##tmp)
 #define get_set(dataset) get_record(dataset, dataset##type)
 
 #define destroy_set(dataset) free(get_set(dataset))
+
 
 #define send_object_msg(obj,msg,...) obj_get_method(obj,msg)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 
@@ -337,15 +367,7 @@ store_record(dataset, dataset##tmp)
 
 #define class_get_pointer_with_msg(class,msg) obj_class_get_pointer(class,msg)
 
-#define static_method_invoke(method,...) $$(NULL,method,__VA_ARGS__)
-
-#define static_method_invoke_with_arglist(method,arglist,...) $$$$(NULL,method,arglist,__VA_ARGS__)
-
-#define smi(method,...) static_method_invoke(method,__VA_ARGS__)
-
-#define smia(method,...) static_method_invoke_with_arglist(method,__VA_ARGS__)
-
-int obj_default_func(va_list external_arglist, const AnyClass obj, ...) ;
+obj_long obj_default_func(va_list external_arglist, const AnyClass obj, ...) ;
 
 AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) ;
 

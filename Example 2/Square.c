@@ -16,21 +16,21 @@ define_data_set(SquareData, float size ; ) ;
 
 start_method(InitSquare, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(size, obj_float))
 
- iclass$(obj, get_cls_for(Square), InitShape, noargs) ;
+ iclass1(obj, get_cls_for(Square), InitShape, noargs) ;
 
  store_set(SquareData) ;
 
- $(obj, set pos, pos_x, pos_y) ;
+ m(obj, set pos, pos_x, pos_y) ;
 
- $(obj, set size, size) ;
+ m(obj, set size, size) ;
 
- $(obj, compute area, noargs) ;
+ m(obj, compute area, noargs) ;
 
 end_method
 
 start_method(DeinitSquare, )
 
- iclass$(obj, get_cls_for(Square), DeinitShape, noargs) ;
+ iclass1(obj, get_cls_for(Square), DeinitShape, noargs) ;
 
  destroy_set(SquareData) ;
 
@@ -50,7 +50,7 @@ end_method
 
 start_method(compute_area, )
 
- $(obj, set area, get_set(SquareData)->size * get_set(SquareData)->size) ;
+ m(obj, set area, get_set(SquareData)->size * get_set(SquareData)->size) ;
 
 end_method
 

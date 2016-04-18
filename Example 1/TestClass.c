@@ -42,7 +42,7 @@ start_method( my_deinit_method, )
 
     free(fds) ;
 
-    $(getobj(obj, mystring),print,noargs) ;
+    m(getobj(obj, mystring),print,noargs) ;
 
 end_method
 
@@ -62,13 +62,13 @@ end_method
 
 start_method( my_method, arg(myint,int) arg(myint2, obj_interger) )
 
-    $(obj, my_first_method, myint) ;
+    m(obj, my_first_method, myint) ;
 
-    $$(obj, my_first_method, myint2) ;
+    pm(obj, my_first_method, myint2) ;
 
-    $$(obj, my_private_method, myint) ;
+    pm(obj, my_private_method, myint) ;
 
-    $$(obj, my_private_method, myint2) ;
+    pm(obj, my_private_method, myint2) ;
 
     StringClass string = new_object(StringClass, "My String!\n") ;
 
@@ -78,13 +78,13 @@ end_method
 
 start_class_method(print_hello_world_from_test,)
 
-   class$(obj, print_hello_world, noargs) ;
+   cm(obj, print_hello_world, noargs) ;
 
 end_method
 
 start_method(print_hello,)
 
-   iclass$(obj, get_cls_for(TestClass), print_hello_world_from_test, noargs) ;
+   iclass1(obj, get_cls_for(TestClass), print_hello_world_from_test, noargs) ;
 
 end_method
 

@@ -16,21 +16,21 @@ define_data_set(RectangleData, float length ; float width ; ) ;
 
 start_method(InitRectangle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(width, obj_float) argfromlist(length, obj_float))
 
- iclass$(obj, get_cls_for(Rectangle), InitShape, noargs) ;
+ iclass1(obj, get_cls_for(Rectangle), InitShape, noargs) ;
 
  store_set(RectangleData) ;
 
- $(obj, set pos, pos_x, pos_y) ;
+ m(obj, set pos, pos_x, pos_y) ;
 
- $(obj, set size, width, length) ;
+ m(obj, set size, width, length) ;
 
- $(obj, compute area, noargs) ;
+ m(obj, compute area, noargs) ;
 
 end_method
 
 start_method(DeinitRectangle, )
 
- iclass$(obj, get_cls_for(Rectangle), DeinitShape, noargs) ;
+ iclass1(obj, get_cls_for(Rectangle), DeinitShape, noargs) ;
 
  destroy_set(RectangleData) ;
 
@@ -54,7 +54,7 @@ end_method
 
 start_method(compute_area, )
 
- $(obj, set area, get_set(RectangleData)->width * get_set(RectangleData)->length) ;
+ m(obj, set area, get_set(RectangleData)->width * get_set(RectangleData)->length) ;
 
 end_method
 

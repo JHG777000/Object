@@ -24,7 +24,7 @@ start_static_method(ShapeFactory, arg(shape, const char*) arg(object, AnyClass*)
 
  if ( factory == NULL ) factory = new_object(ShapeFactoryClass, noargs) ;
 
- int retval = send_object_msg(factory, shape, &any_class, pos_x, pos_y, value1, value2) ;
+ obj_long retval = send_object_msg(factory, shape, &any_class, pos_x, pos_y, value1, value2) ;
 
  if ( retval ) {
     
@@ -44,9 +44,9 @@ start_static_method(ShapeFactory, arg(shape, const char*) arg(object, AnyClass*)
 
 end_method
 
-static void myitoa( int val, char* string ) {
+static void myitoa( obj_long val, char* string ) {
     
-    snprintf(string, sizeof(string), "%d", val) ;
+    snprintf(string, sizeof(string), "%ld", val) ;
 }
 
 start_method(deinit_factory,)
@@ -82,7 +82,7 @@ start_method(new_circle, arg(ret_circle, AnyClass*) arg(pos_x, obj_float) arg(po
 
  char object_id[100] ;
 
- myitoa($$(obj,get_object_id,noargs), object_id) ;
+ myitoa(pm(obj,get_object_id,noargs), object_id) ;
 
  store_object_with_msg(obj, object_id, *ret_circle) ;
 
@@ -94,7 +94,7 @@ start_method(new_square, arg(ret_square, AnyClass*) arg(pos_x, obj_float) arg(po
 
  char object_id[100] ;
 
- myitoa($$(obj,get_object_id,noargs), object_id) ;
+ myitoa(pm(obj,get_object_id,noargs), object_id) ;
 
  store_object_with_msg(obj, object_id, *ret_square) ;
 
@@ -106,7 +106,7 @@ start_method(new_rectangle, arg(ret_rectangle, AnyClass*) arg(pos_x, obj_float) 
 
  char object_id[100] ;
 
- myitoa($$(obj,get_object_id,noargs), object_id) ;
+ myitoa(pm(obj,get_object_id,noargs), object_id) ;
 
  store_object_with_msg(obj, object_id, *ret_rectangle) ;
 
