@@ -278,7 +278,7 @@ method_args\
 #define pcm(obj,method,...) private_class_method_invoke(obj,method,__VA_ARGS__)
 
 #define private_class_method_invoke_with_arglist(obj,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,cls,__VA_ARGS__)
-#define pcma(obj,method,arglist,...) class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
+#define pcma(obj,method,arglist,...) private_class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
 
 #define invoke_class1(obj,class,method,...) ((obj_classmethod)obj_get_class_method(class,#method))(NULL,(AnyClass)obj,class,__VA_ARGS__)
