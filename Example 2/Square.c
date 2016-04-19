@@ -10,13 +10,11 @@
 
 use_class(Shape) ;
 
-make_cls_available_for(Square) ;
-
 define_data_set(SquareData, float size ; ) ;
 
-start_method(InitSquare, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(size, obj_float))
+start_method(InitSquare, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(size, obj_float) arg(cls, obj_class))
 
- iclass1(obj, get_cls_for(Square), InitShape, noargs) ;
+ cm(obj, InitShape, noargs) ;
 
  store_set(SquareData) ;
 
@@ -28,9 +26,9 @@ start_method(InitSquare, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_fl
 
 end_method
 
-start_method(DeinitSquare, )
+start_method(DeinitSquare, arg(cls, obj_class))
 
- iclass1(obj, get_cls_for(Square), DeinitShape, noargs) ;
+ cm(obj, DeinitShape, noargs) ;
 
  destroy_set(SquareData) ;
 
@@ -67,7 +65,5 @@ new_class(Square) {
     make_method_mask(set_size, set size) ;
     
     make_method_mask(compute_area, compute area) ;
-    
-    init_cls_for(Square) ;
 }
 

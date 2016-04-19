@@ -12,9 +12,9 @@
 
 #include "obj.h"
 
-struct obj_class_s { void* fast_data_structure ; RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ;
+struct obj_class_s { void* fast_data_structure ; obj_method init ; obj_method deinit ; RKStore methods ; RKStore final_methods ;
     
-RKStore data ; obj_classdef the_classdef ; } ;
+RKStore class_methods ; RKStore final_class_methods ; RKStore data ; obj_classdef the_classdef ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; } ;
 
@@ -45,7 +45,7 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
     start_arglist(arglist, the_classdef) ;
     
-    ma(obj, init, arglist, noargs) ;
+    obj->class_of_object->init(arglist,(AnyClass)obj,NULL,obj->class_of_object) ;
     
     end_arglist(arglist) ;
     
@@ -65,7 +65,7 @@ void obj_object_dealloc( AnyClass obj ) {
     
     object obj_ = (object)obj ;
     
-    m(obj,deinit,noargs) ;
+    obj_->class_of_object->deinit(NULL,(AnyClass)obj,NULL,obj_->class_of_object) ;
     
     obj_->class_of_object->the_classdef(-1, NULL) ;
     
@@ -151,6 +151,10 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     obj_class cls = RKMem_NewMemOfType(struct obj_class_s) ;
     
+    cls->init = obj_default_func ;
+    
+    cls->deinit = obj_default_func ;
+    
     cls->final_class_methods = RKStore_NewStore() ;
     
     cls->class_methods = RKStore_NewStore() ;
@@ -189,6 +193,16 @@ void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) {
 void* obj_class_get_pointer( obj_class cls, const char* name ) {
     
     return RKStore_GetItem(cls->data, name) ;
+}
+
+void obj_add_init_method( obj_method method, obj_class cls ) {
+    
+    cls->init = method ;
+}
+
+void obj_add_deinit_method( obj_method method, obj_class cls ) {
+    
+    cls->deinit = method ;
 }
 
 void obj_add_method( obj_method method, const char* name, obj_class cls ) {

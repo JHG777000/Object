@@ -10,13 +10,11 @@
 
 use_class(Shape) ;
 
-make_cls_available_for(Rectangle) ;
-
 define_data_set(RectangleData, float length ; float width ; ) ;
 
-start_method(InitRectangle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(width, obj_float) argfromlist(length, obj_float))
+start_method(InitRectangle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(width, obj_float) argfromlist(length, obj_float) arg(cls, obj_class))
 
- iclass1(obj, get_cls_for(Rectangle), InitShape, noargs) ;
+ cm(obj, InitShape, noargs) ;
 
  store_set(RectangleData) ;
 
@@ -28,9 +26,9 @@ start_method(InitRectangle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj
 
 end_method
 
-start_method(DeinitRectangle, )
+start_method(DeinitRectangle, arg(cls, obj_class) )
 
- iclass1(obj, get_cls_for(Rectangle), DeinitShape, noargs) ;
+ cm(obj, DeinitShape, noargs) ;
 
  destroy_set(RectangleData) ;
 
@@ -71,7 +69,5 @@ new_class(Rectangle) {
     make_method_mask(set_size, set size) ;
     
     make_method_mask(compute_area, compute area) ;
-    
-    init_cls_for(Rectangle) ;
 }
 

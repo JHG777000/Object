@@ -12,13 +12,11 @@
 
 use_class(Shape) ;
 
-make_cls_available_for(Circle) ;
-
 define_data_set(CircleData, float radius ; ) ;
 
-start_method(InitCircle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(radius, obj_float))
+start_method(InitCircle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(radius, obj_float) arg(cls, obj_class))
 
- iclass1(obj, get_cls_for(Circle), InitShape, noargs) ;
+ cm(obj, InitShape, noargs) ;
 
  store_set(CircleData) ;
 
@@ -30,9 +28,9 @@ start_method(InitCircle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_fl
 
 end_method
 
-start_method(DeinitCircle, )
+start_method(DeinitCircle, arg(cls, obj_class))
 
- iclass1(obj, get_cls_for(Circle), DeinitShape, noargs) ;
+ cm(obj, DeinitShape, noargs) ;
 
  destroy_set(CircleData) ;
 
@@ -69,6 +67,4 @@ new_class(Circle) {
     make_method_mask(set_radius, set radius) ;
     
     make_method_mask(compute_area, compute area) ;
-    
-    init_cls_for(Circle) ;
 }

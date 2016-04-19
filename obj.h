@@ -141,9 +141,9 @@ typedef struct Obj##classname##_s* classname
 
 #define make_method_final(methodname) obj_add_final_method(#methodname,cls)
 
-#define make_method_init(method) make_method_mask(method,init)
+#define make_method_init(method) obj_add_init_method(method,cls)
 
-#define make_method_deinit(method) make_method_mask(method,deinit)
+#define make_method_deinit(method) obj_add_deinit_method(method,cls)
 
 #define make_class_method_public(method) obj_add_class_method((obj_method)method,#method,cls)
 
@@ -392,6 +392,10 @@ void obj_class_dealloc( obj_class cls ) ;
 void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) ;
 
 void* obj_class_get_pointer( obj_class cls, const char* name ) ;
+
+void obj_add_init_method( obj_method method, obj_class cls ) ;
+
+void obj_add_deinit_method( obj_method method, obj_class cls ) ;
 
 void obj_add_method( obj_method method, const char* name, obj_class cls ) ;
 
