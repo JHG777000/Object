@@ -12,15 +12,11 @@ define_data_set(ShapeData, float pos_x ; float pos_y ; float area ; ) ;
 
 start_class_method(InitShape, )
 
- if ( !is_object_of_class(obj,cls) ) return_error_from_method ;
-
  store_set(ShapeData) ;
 
 end_method
 
 start_class_method(DeinitShape, )
-
- if ( !is_object_of_class(obj,cls) ) return_error_from_method ;
 
  destroy_set(ShapeData) ;
 

@@ -229,6 +229,7 @@ method_args\
 va_list method_arglist ;\
 va_start(method_arglist,cls) ;\
 if (cls == NULL) {printf("Object Runtime: Error, access control violation or corrupted 'cls' pointer.\n");exit(EXIT_FAILURE);}\
+if ( !obj_verify_object_is_of_class(obj,cls) ) return -2 ;\
 void * const obj_nullptr = NULL ;\
 if (obj_nullptr != NULL) return -1 ;\
 method_args\
