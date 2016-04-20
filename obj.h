@@ -281,24 +281,6 @@ method_args\
 #define pcma(obj,method,arglist,...) private_class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
 
-#define invoke_class1(obj,class,method,...) ((obj_classmethod)obj_get_class_method(class,#method))(NULL,(AnyClass)obj,class,__VA_ARGS__)
-
-#define invoke_class2(obj,class,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,class,__VA_ARGS__)
-
-#define invoke_class3(obj,class,method,arglist,...) ((obj_classmethod)obj_get_class_method(class,#method))(arglist,(AnyClass)obj,class,__VA_ARGS__)
-
-#define invoke_class4(obj,class,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,class,__VA_ARGS__)
-
-
-#define iclass1(obj,class,method,...) invoke_class1(obj,class,method,__VA_ARGS__)
-
-#define iclass2(obj,class,method,...) invoke_class2(obj,class,method,__VA_ARGS__)
-
-#define iclass3(obj,class,method,arglist,...) invoke_class3(obj,class,method,arglist,__VA_ARGS__)
-
-#define iclass4(obj,class,method,arglist,...) invoke_class4(obj,class,method,arglist,__VA_ARGS__)
-
-
 #define fast_data_store ((obj_fds_type)obj)->fast_data_structure
 
 #define fast_data_store_class ((obj_fds_type)cls)->fast_data_structure

@@ -84,7 +84,9 @@ end_method
 
 start_method(print_hello,)
 
-   iclass1(obj, get_cls_for(TestClass), print_hello_world_from_test, noargs) ;
+   obj_class cls = get_cls_for(TestClass) ;
+
+   cm(obj, print_hello_world_from_test, noargs) ;
 
 end_method
 
