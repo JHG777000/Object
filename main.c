@@ -6,15 +6,15 @@
 //  Copyright © 2016 Jacob Gordon. All rights reserved.
 //
 
-void Exmaple1( void ) ;
+void Example1( void ) ;
 
-void Exmaple2( void ) ;
+void Example2( void ) ;
 
 int main(int argc, const char * argv[]) {
     
-    Exmaple1() ;
+    Example1() ;
     
-    Exmaple2() ;
+    Example2() ;
     
     return 0 ;
 }

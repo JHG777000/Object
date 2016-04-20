@@ -10,7 +10,7 @@
 
 use_static_method(ShapeFactory) ;
 
-void Exmaple2( void ) {
+void Example2( void ) {
     
     obj_float area = 0 ;
     

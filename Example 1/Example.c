@@ -12,7 +12,7 @@ use_class(TestClass) ;
 
 use_class(StringClass) ;
 
-void Exmaple1( void ) {
+void Example1( void ) {
     
     TestClass myobject = new_object(TestClass, 10.0) ;
     
