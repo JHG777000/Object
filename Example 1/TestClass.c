@@ -14,7 +14,7 @@ use_class(StringClass) ;
 
 make_cls_available_for(TestClass) ;
 
-typedef struct TestClassFDS_s { int value ; } *TestClassFDS ;
+define_record_type(TestClassFDS, int value ; ) ;
 
 start_method( my_init_method, argfromlist(myfloat, obj_float) )
 
@@ -26,7 +26,7 @@ start_method( my_init_method, argfromlist(myfloat, obj_float) )
 
     sp(obj, myfloat, myptrtofloat) ;
 
-    fds = RKMem_NewMemOfType(struct TestClassFDS_s) ;
+    fds = new_record(TestClassFDS) ;
 
     get_fds(TestClassFDS)->value = 22 ;
 
