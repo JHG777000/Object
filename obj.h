@@ -65,7 +65,7 @@ typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj
 #define obj_bitsizeof(type) sizeof(type) * CHAR_BIT
 
 #define new_class(classname)\
-static void classname##_init_method(const obj_class cls) ;\
+static void classname##_obj_class_init_method(const obj_class cls) ;\
 obj_class Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
@@ -81,20 +81,20 @@ static int count = 0 ;\
   count++ ;\
   if (cls == NULL){\
    cls = obj_class_alloc(Def##classname) ;\
-   classname##_init_method(cls) ;\
+   classname##_obj_class_init_method(cls) ;\
    }\
  return cls ;\
  }\
  if (mode == 1) {\
-  classname##_init_method(subclass) ;\
+  classname##_obj_class_init_method(subclass) ;\
   return subclass ;\
  }\
 return NULL ;\
 }\
-static void classname##_init_method(const obj_class cls)
+static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_private_class(classname)\
-static void classname##_init_method(const obj_class cls) ;\
+static void classname##_obj_class_init_method(const obj_class cls) ;\
 static obj_class Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
@@ -110,17 +110,17 @@ if (mode == 0) {\
 count++ ;\
 if (cls == NULL){\
 cls = obj_class_alloc(Def##classname) ;\
-classname##_init_method(cls) ;\
+classname##_obj_class_init_method(cls) ;\
 }\
 return cls ;\
 }\
 if (mode == 1) {\
-classname##_init_method(subclass) ;\
+classname##_obj_class_init_method(subclass) ;\
 return subclass ;\
 }\
 return NULL ;\
 }\
-static void classname##_init_method(const obj_class cls)
+static void classname##_obj_class_init_method(const obj_class cls)
 
 #define make_class_subclass_of(superclass) Def##superclass(1, cls)
 
