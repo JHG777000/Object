@@ -78,7 +78,7 @@ end_method
 
 start_method(new_circle, arg(ret_circle, AnyClass*) arg(pos_x, obj_float) arg(pos_y, obj_float) arg(radius, obj_float))
 
- *ret_circle = new_object(Circle, pos_x, pos_y, radius) ;
+ *ret_circle = new_any_object(Circle, pos_x, pos_y, radius) ;
 
  char object_id[100] ;
 
@@ -90,7 +90,7 @@ end_method
 
 start_method(new_square, arg(ret_square, AnyClass*) arg(pos_x, obj_float) arg(pos_y, obj_float) arg(size, obj_float))
 
- *ret_square = new_object(Square, pos_x, pos_y, size) ;
+ *ret_square = new_any_object(Square, pos_x, pos_y, size) ;
 
  char object_id[100] ;
 
@@ -102,7 +102,7 @@ end_method
 
 start_method(new_rectangle, arg(ret_rectangle, AnyClass*) arg(pos_x, obj_float) arg(pos_y, obj_float) arg(width, obj_float) arg(length, obj_float))
 
- *ret_rectangle = new_object(Rectangle, pos_x, pos_y, width, length) ;
+ *ret_rectangle = new_any_object(Rectangle, pos_x, pos_y, width, length) ;
 
  char object_id[100] ;
 

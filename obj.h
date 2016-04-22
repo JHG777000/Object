@@ -26,7 +26,7 @@
 
 typedef struct obj_class_s* obj_class ;
 
-typedef void* AnyClass ;
+typedef struct obj_object_s* AnyClass ;
 
 typedef obj_class (*obj_classdef)(int mode, obj_class subclass) ;
 
@@ -168,9 +168,9 @@ typedef struct Obj##classname##_s* classname
 #define get_classdef(class) Def##class
 
 
-#define store_object_strong(object1,name,object2) obj_store_object(object1,object2,#name,1)
+#define store_object_strong(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,1)
 
-#define store_object_weak(object1,name,object2) obj_store_object(object1,object2,#name,0)
+#define store_object_weak(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,0)
 
 #define sos(object1,name,object2) store_object_strong(object1,name,object2)
 
@@ -180,13 +180,13 @@ typedef struct Obj##classname##_s* classname
 
 #define getobj(object,name) get_object(object,name)
 
-#define store_pointer(object,name,pointer) obj_store_pointer(object,pointer,#name)
+#define store_pointer(object,name,pointer) obj_store_pointer((AnyClass)object,pointer,#name)
 
 #define sp(object,name,pointer) store_pointer(object,name,pointer)
 
-#define get_pointer(object,name) obj_get_pointer(object,#name)
+#define get_pointer(object,name) obj_get_pointer((AnyClass)object,#name)
 
-#define gp(object,name) get_pointer(object,name)
+#define gp(object,name) get_pointer((AnyClass)object,name)
 
 #define class_store_pointer(class,name,pointer) obj_class_store_pointer(class,pointer,#name)
 
@@ -197,9 +197,9 @@ typedef struct Obj##classname##_s* classname
 #define class_gp(class,name) obj_class_get_pointer(class,name)
 
 
-#define add_ref_count(object) obj_add_ref_count(object)
+#define add_ref_count(object) obj_add_ref_count((AnyClass)object)
 
-#define sub_ref_count(object) obj_sub_ref_count(object)
+#define sub_ref_count(object) obj_sub_ref_count((AnyClass)object)
 
 
 #define arg(name,type) type name = va_arg(method_arglist,type) ;
@@ -251,15 +251,15 @@ method_args\
 
 #define return_from_method return 1
 
-#define get_method(obj,method) obj_get_method(obj,#method)
+#define get_method(obj,method) obj_get_method((AnyClass)obj,#method)
 
 #define get_class_method(cls,method) obj_get_class_method(cls,#method)
 
 
-#define method_invoke(obj,method,...) obj_get_method(obj,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define method_invoke(obj,method,...) obj_get_method((AnyClass)obj,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 #define m(obj,method,...) method_invoke(obj,method,__VA_ARGS__)
 
-#define method_invoke_with_arglist(obj,method,arglist,...) obj_get_method(obj,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define method_invoke_with_arglist(obj,method,arglist,...) obj_get_method((AnyClass)obj,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
 #define ma(obj,method,arglist,...) method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
 #define private_method_invoke(obj,method,...) method(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
@@ -312,7 +312,7 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 
-#define is_object_of_class(obj,cls) obj_verify_object_is_of_class(obj,cls)
+#define is_object_of_class(obj,cls) obj_verify_object_is_of_class((AnyClass)obj,cls)
 
 
 #define define_record_type(recordtype,...) typedef struct recordtype##_s { __VA_ARGS__ } *recordtype
@@ -333,23 +333,23 @@ store_record(dataset, dataset##tmp)
 #define destroy_set(dataset) free(get_set(dataset))
 
 
-#define send_object_msg(obj,msg,...) obj_get_method(obj,msg)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define send_object_msg(obj,msg,...) obj_get_method((AnyClass)obj,msg)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 
-#define send_object_msg_with_arglist(obj,msg,arglist,...) obj_get_method(obj,msg)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define send_object_msg_with_arglist(obj,msg,arglist,...) obj_get_method((AnyClass)obj,msg)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
 
 #define som(obj,msg,...) send_object_msg(obj,msg,__VA_ARGS__)
 
 #define soma(obj,msg,arglist,...) send_object_msg_with_arglist(obj,msg,arglist,__VA_ARGS__)
 
-#define store_object_with_msg(object1,msg,object2) obj_store_object(object1,object2,msg,1)
+#define store_object_with_msg(object1,msg,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,msg,1)
 
-#define store_weak_object_with_msg(object1,msg,object2) obj_store_object(object1,object2,msg,0)
+#define store_weak_object_with_msg(object1,msg,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,msg,0)
 
-#define get_object_with_msg(object, msg) obj_get_object(object, msg)
+#define get_object_with_msg(object, msg) obj_get_object((AnyClass)object, msg)
 
-#define store_pointer_with_msg(object,msg,pointer) obj_store_pointer(object,pointer,msg)
+#define store_pointer_with_msg(object,msg,pointer) obj_store_pointer((AnyClass)object,pointer,msg)
 
-#define get_pointer_with_msg(object,msg) obj_get_pointer(object,msg)
+#define get_pointer_with_msg(object,msg) obj_get_pointer((AnyClass)object,msg)
 
 #define class_store_pointer_with_msg(class,msg,pointer) obj_class_store_pointer(class,pointer,msg)
 

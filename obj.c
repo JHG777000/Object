@@ -23,9 +23,7 @@ RKStore class_methods ; RKStore final_class_methods ; RKStore data ; obj_classde
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; } ;
 
-typedef struct obj_object_s* object ;
-
-struct obj_ref_s { int strong ; object obj ; object base_obj ; } ;
+struct obj_ref_s { int strong ; AnyClass obj ; AnyClass base_obj ; } ;
 
 typedef struct obj_ref_s* obj_ref ;
 
@@ -36,7 +34,7 @@ typedef struct obj_ref_s* obj_ref ;
 
 AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
-    object obj = RKMem_NewMemOfType(struct obj_object_s) ;
+    AnyClass obj = RKMem_NewMemOfType(struct obj_object_s) ;
     
     obj->class_of_object = the_classdef(0, NULL) ;
     
@@ -68,54 +66,46 @@ static void obj_dealloc_refs( void* data ) {
 
 void obj_object_dealloc( AnyClass obj ) {
     
-    object obj_ = (object)obj ;
+    obj->class_of_object->deinit(NULL,(AnyClass)obj,NULL,obj->class_of_object) ;
     
-    obj_->class_of_object->deinit(NULL,(AnyClass)obj,NULL,obj_->class_of_object) ;
+    obj->class_of_object->the_classdef(-1, NULL) ;
     
-    obj_->class_of_object->the_classdef(-1, NULL) ;
+    RKStore_DestroyStore(obj->data) ;
     
-    RKStore_DestroyStore(obj_->data) ;
+    RKStore_IterateStoreWith(obj_dealloc_refs, obj->refs) ;
     
-    RKStore_IterateStoreWith(obj_dealloc_refs, obj_->refs) ;
-    
-    RKStore_DestroyStore(obj_->refs) ;
+    RKStore_DestroyStore(obj->refs) ;
     
     free(obj) ;
 }
 
 void obj_store_object( AnyClass obj1, AnyClass obj2, const char* name, int strong ) {
     
-    object obj1_ = (object)obj1 ;
-    
-    object obj2_ = (object)obj2 ;
-    
-    if ( RKStore_ItemExists(obj1_->refs, name) ) {
+    if ( RKStore_ItemExists(obj1->refs, name) ) {
         
-        obj_ref ref = RKStore_GetItem(obj1_->refs, name) ;
+        obj_ref ref = RKStore_GetItem(obj1->refs, name) ;
         
-        if ( (ref->strong) && (ref->obj != obj1_) && (ref->obj != obj2_) ) sub_ref_count(ref->obj) ;
+        if ( (ref->strong) && (ref->obj != obj1) && (ref->obj != obj2) ) sub_ref_count(ref->obj) ;
         
         free(ref) ;
     }
     
     obj_ref ref = RKMem_NewMemOfType(struct obj_ref_s) ;
     
-    ref->base_obj = obj1_ ;
+    ref->base_obj = obj1 ;
     
     ref->strong = strong ;
     
-    ref->obj = obj2_ ;
+    ref->obj = obj2 ;
     
-    if ( (ref->strong) && (obj1_ != obj2_) ) add_ref_count(ref->obj) ;
+    if ( (ref->strong) && (obj1 != obj2) ) add_ref_count(ref->obj) ;
     
-    RKStore_AddItem(obj1_->refs, ref, name) ;
+    RKStore_AddItem(obj1->refs, ref, name) ;
 }
 
 AnyClass obj_get_object( AnyClass obj, const char* name ) {
     
-    object obj_ = (object)obj ;
-    
-    obj_ref ref = RKStore_GetItem(obj_->refs, name) ;
+    obj_ref ref = RKStore_GetItem(obj->refs, name) ;
     
     if ( ref == NULL ) return NULL ;
     
@@ -124,32 +114,24 @@ AnyClass obj_get_object( AnyClass obj, const char* name ) {
 
 void obj_store_pointer( AnyClass obj, void* pointer, const char* name ) {
     
-    object obj_ = (object)obj ;
-    
-    RKStore_AddItem(obj_->data, pointer, name) ;
+    RKStore_AddItem(obj->data, pointer, name) ;
 }
 
 void* obj_get_pointer( AnyClass obj, const char* name ) {
     
-    object obj_ = (object)obj ;
-    
-    return RKStore_GetItem(obj_->data, name) ;
+    return RKStore_GetItem(obj->data, name) ;
 }
 
 void obj_add_ref_count( AnyClass obj ) {
     
-    object obj_ = (object)obj ;
-    
-    if ( obj_ != NULL ) obj_->refcount++ ;
+    if ( obj != NULL ) obj->refcount++ ;
 }
 
 void obj_sub_ref_count( AnyClass obj ) {
     
-    object obj_ = (object)obj ;
+    if ( obj != NULL ) obj->refcount-- ;
     
-    if ( obj_ != NULL ) obj_->refcount-- ;
-    
-    if ( obj_ != NULL ) if ( obj_->refcount <= 0 ) free_object(obj) ;
+    if ( obj != NULL ) if ( obj->refcount <= 0 ) free_object(obj) ;
 }
 
 obj_class obj_class_alloc( obj_classdef the_classdef ) {
@@ -222,11 +204,9 @@ void obj_add_final_method( const char* name, obj_class cls ) {
 
 obj_method obj_get_method( AnyClass obj, const char* name ) {
     
-    object obj_ = (object)obj ;
-    
     obj_method method = NULL ;
     
-    method = RKStore_GetItem(obj_->class_of_object->methods, name) ;
+    method = RKStore_GetItem(obj->class_of_object->methods, name) ;
     
     if ( method == NULL ) return obj_default_func ;
     
@@ -256,9 +236,7 @@ obj_method obj_get_class_method( obj_class cls, const char* name ) {
 
 int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
     
-    object obj_ = (object)obj ;
-    
-    if ( obj_->class_of_object == cls ) return 1 ;
+    if ( obj->class_of_object == cls ) return 1 ;
     
     return 0 ;
 }
