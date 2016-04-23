@@ -44,12 +44,6 @@ start_static_method(ShapeFactory, arg(shape, const char*) arg(object, AnyClass*)
 
 end_method
 
-start_method(deinit_factory,)
-
- free(get_pointer(obj, counter)) ;
-
-end_method
-
 start_method(new_circle, arg(ret_circle, AnyClass*) arg(pos_x, obj_float) arg(pos_y, obj_float) arg(radius, obj_float))
 
  *ret_circle = new_any_object(Circle, pos_x, pos_y, radius) ;
@@ -81,8 +75,6 @@ start_method(destroy_factory,)
 end_method
 
 new_private_class(ShapeFactoryClass) {
-    
-    make_method_deinit(deinit_factory) ;
     
     make_method_mask(new_circle, Circle) ;
     
