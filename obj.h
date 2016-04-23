@@ -168,6 +168,8 @@ typedef struct Obj##classname##_s* classname
 #define get_classdef(class) Def##class
 
 
+#define keep_object(object1,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,NULL,1)
+
 #define store_object_strong(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,1)
 
 #define store_object_weak(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,0)

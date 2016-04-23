@@ -44,35 +44,9 @@ start_static_method(ShapeFactory, arg(shape, const char*) arg(object, AnyClass*)
 
 end_method
 
-static void myitoa( obj_long val, char* string ) {
-    
-    snprintf(string, sizeof(string), "%ld", val) ;
-}
-
 start_method(deinit_factory,)
 
  free(get_pointer(obj, counter)) ;
-
-end_method
-
-start_method(get_object_id, )
-
- int* counter = NULL ;
-
- counter = gp(obj, counter) ;
-
- if ( counter == NULL ) {
-    
-     counter = RKMem_NewMemOfType(int) ;
-     
-     *counter = 0 ;
-     
-     sp(obj, counter, counter) ;
- }
-
-(*counter)++ ;
-
-return *counter ;
 
 end_method
 
@@ -80,11 +54,7 @@ start_method(new_circle, arg(ret_circle, AnyClass*) arg(pos_x, obj_float) arg(po
 
  *ret_circle = new_any_object(Circle, pos_x, pos_y, radius) ;
 
- char object_id[100] ;
-
- myitoa(pm(obj,get_object_id,noargs), object_id) ;
-
- store_object_with_msg(obj, object_id, *ret_circle) ;
+ keep_object(obj, *ret_circle) ;
 
 end_method
 
@@ -92,11 +62,7 @@ start_method(new_square, arg(ret_square, AnyClass*) arg(pos_x, obj_float) arg(po
 
  *ret_square = new_any_object(Square, pos_x, pos_y, size) ;
 
- char object_id[100] ;
-
- myitoa(pm(obj,get_object_id,noargs), object_id) ;
-
- store_object_with_msg(obj, object_id, *ret_square) ;
+ keep_object(obj, *ret_square) ;
 
 end_method
 
@@ -104,11 +70,7 @@ start_method(new_rectangle, arg(ret_rectangle, AnyClass*) arg(pos_x, obj_float) 
 
  *ret_rectangle = new_any_object(Rectangle, pos_x, pos_y, width, length) ;
 
- char object_id[100] ;
-
- myitoa(pm(obj,get_object_id,noargs), object_id) ;
-
- store_object_with_msg(obj, object_id, *ret_rectangle) ;
+ keep_object(obj, *ret_rectangle) ;
 
 end_method
 

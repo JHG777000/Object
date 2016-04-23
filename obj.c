@@ -81,13 +81,17 @@ void obj_object_dealloc( AnyClass obj ) {
 
 void obj_store_object( AnyClass obj1, AnyClass obj2, const char* name, int strong ) {
     
-    if ( RKStore_ItemExists(obj1->refs, name) ) {
+    if ( name != NULL ) {
+    
+      if ( RKStore_ItemExists(obj1->refs, name) ) {
         
-        obj_ref ref = RKStore_GetItem(obj1->refs, name) ;
+          obj_ref ref = RKStore_GetItem(obj1->refs, name) ;
         
-        if ( (ref->strong) && (ref->obj != obj1) && (ref->obj != obj2) ) sub_ref_count(ref->obj) ;
+          if ( (ref->strong) && (ref->obj != obj1) && (ref->obj != obj2) ) sub_ref_count(ref->obj) ;
         
-        free(ref) ;
+          free(ref) ;
+      }
+        
     }
     
     obj_ref ref = RKMem_NewMemOfType(struct obj_ref_s) ;
@@ -99,6 +103,13 @@ void obj_store_object( AnyClass obj1, AnyClass obj2, const char* name, int stron
     ref->obj = obj2 ;
     
     if ( (ref->strong) && (obj1 != obj2) ) add_ref_count(ref->obj) ;
+    
+    if ( name == NULL ) {
+        
+        RKStore_AddItemToList(obj1->refs, ref) ;
+        
+        return ;
+    }
     
     RKStore_AddItem(obj1->refs, ref, name) ;
 }
