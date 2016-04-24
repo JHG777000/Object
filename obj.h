@@ -167,6 +167,8 @@ typedef struct Obj##classname##_s* classname
 
 #define get_classdef(class) Def##class
 
+#define get_classdef_from_cls(cls) obj_get_classdef_from_class(cls)
+
 
 #define keep_object(object1,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,NULL,1)
 
@@ -398,6 +400,8 @@ void obj_add_class_method( obj_method method, const char* name, obj_class cls ) 
 void obj_add_final_class_method( const char* name, obj_class cls ) ;
 
 obj_method obj_get_class_method( obj_class cls, const char* name ) ;
+
+obj_classdef obj_get_classdef_from_class( obj_class cls ) ;
 
 int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) ;
 

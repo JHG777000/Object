@@ -245,6 +245,11 @@ obj_method obj_get_class_method( obj_class cls, const char* name ) {
     return method ;
 }
 
+obj_classdef obj_get_classdef_from_class( obj_class cls ) {
+    
+    return cls->the_classdef ;
+}
+
 int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
     
     if ( obj->class_of_object == cls ) return 1 ;
