@@ -311,7 +311,7 @@ method_args\
 
 #define get_fds(type) get_fast_data_store(type)
 
-#define get_fds_class get_fast_data_store_class(type)
+#define get_fds_class(type) get_fast_data_store_class(type)
 
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
