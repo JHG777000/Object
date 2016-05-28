@@ -19,13 +19,18 @@
 
 struct obj_class_s { void* fast_data_structure ; obj_method init ; obj_method deinit ; RKStore methods ; RKStore final_methods ;
     
-RKStore class_methods ; RKStore final_class_methods ; RKStore data ; obj_classdef the_classdef ; } ;
+RKStore class_methods ; RKStore final_class_methods ; RKStore data ; RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
 
-struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; } ;
+struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
 struct obj_ref_s { int strong ; AnyClass obj ; AnyClass base_obj ; } ;
 
 typedef struct obj_ref_s* obj_ref ;
+
+static void myitoa( obj_ulong val, char* string ) {
+    
+    snprintf(string, sizeof(string), "%ld", val) ;
+}
 
  obj_long obj_default_func(va_list external_arglist, const AnyClass obj, ...) {
     
@@ -43,6 +48,10 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     obj->refs = RKStore_NewStore() ;
     
     obj->refcount = 0 ;
+    
+    obj->class_of_object->object_id_count++ ;
+    
+    obj->object_id = obj->class_of_object->object_id_count ;
     
     obj_arglist arglist ;
     
@@ -163,6 +172,10 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     cls->data = RKStore_NewStore() ;
     
+    cls->private_stores = RKStore_NewStore() ;
+    
+    cls->object_id_count = 0 ;
+    
     cls->the_classdef = the_classdef ;
     
     return cls ;
@@ -179,6 +192,8 @@ void obj_class_dealloc( obj_class cls ) {
     RKStore_DestroyStore(cls->methods) ;
     
     RKStore_DestroyStore(cls->data) ;
+    
+    RKStore_DestroyStore(cls->private_stores) ;
     
     free(cls) ;
 }
@@ -255,4 +270,37 @@ int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
     if ( obj->class_of_object == cls ) return 1 ;
     
     return 0 ;
+}
+
+void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
+    
+    void* private_store = RKMem_NewMemOfType(void*) ;
+    
+    char id_string[100] ;
+    
+    myitoa(obj->object_id, id_string) ;
+    
+    RKStore_AddItem(cls->private_stores, private_store, id_string) ;
+}
+
+void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
+    
+    char id_string[100] ;
+    
+    myitoa(obj->object_id, id_string) ;
+    
+    void* private_store = RKStore_GetItem(cls->private_stores, id_string) ;
+    
+    free(private_store) ;
+    
+    RKStore_RemoveItem(cls->private_stores, id_string) ;
+}
+
+void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) {
+    
+    char id_string[100] ;
+    
+    myitoa(obj->object_id, id_string) ;
+    
+    return RKStore_GetItem(cls->private_stores, id_string) ;
 }

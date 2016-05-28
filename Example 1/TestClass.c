@@ -16,7 +16,7 @@ make_cls_available_for(TestClass) ;
 
 define_record_type(TestClassFDS, int value ; ) ;
 
-start_method( my_init_method, argfromlist(myfloat, obj_float) )
+start_method( my_init_method, argfromlist(myfloat, obj_float) arg(cls, obj_class))
 
     printf("my init method: %f\n", myfloat) ;
 
@@ -30,9 +30,15 @@ start_method( my_init_method, argfromlist(myfloat, obj_float) )
 
     get_fds(TestClassFDS)->value = 22 ;
 
+    make_private_object_store_available ;
+
+    pos_m = new_record(TestClassFDS) ;
+
+    get_pos_m(TestClassFDS)->value = 34 ;
+
 end_method
 
-start_method( my_deinit_method, )
+start_method( my_deinit_method, arg(cls, obj_class) )
 
     obj_float *myptrtofloat = get_pointer(obj, myfloat) ;
 
@@ -41,6 +47,12 @@ start_method( my_deinit_method, )
     free(myptrtofloat) ;
 
     free(fds) ;
+
+    printf("my private data store value: %d\n", get_pos_m(TestClassFDS)->value) ;
+
+    free(pos_m) ;
+
+    destroy_private_object_store ;
 
     m(getobj(obj, mystring),print,noargs) ;
 

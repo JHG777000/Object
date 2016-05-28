@@ -344,6 +344,19 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 
+#define make_private_object_store_available obj_alloc_private_store_for_object(obj,cls)
+
+#define destroy_private_object_store obj_dealloc_private_store_for_object(obj,cls)
+
+#define private_object_store (*obj_get_private_store_for_object(obj,cls))
+
+#define get_private_object_store(type) ((type)private_object_store)
+
+#define pos_m private_object_store
+
+#define get_pos_m(type) get_private_object_store(type)
+
+
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class((AnyClass)obj,cls)
 
 
@@ -432,5 +445,11 @@ obj_method obj_get_class_method( obj_class cls, const char* name ) ;
 obj_classdef obj_get_classdef_from_class( obj_class cls ) ;
 
 int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) ;
+
+void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
+
+void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
+
+void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
 #endif /* obj_h */
