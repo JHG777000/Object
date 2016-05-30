@@ -30,11 +30,11 @@ start_method( my_init_method, argfromlist(myfloat, obj_float) arg(cls, obj_class
 
     get_fds(TestClassFDS)->value = 22 ;
 
-    make_private_object_store_available ;
+    make_private_data_store_available ;
 
-    pos_m = new_record(TestClassFDS) ;
+    pds = new_record(TestClassFDS) ;
 
-    get_pos_m(TestClassFDS)->value = 34 ;
+    get_pds(TestClassFDS)->value = 34 ;
 
 end_method
 
@@ -48,11 +48,11 @@ start_method( my_deinit_method, arg(cls, obj_class) )
 
     free(fds) ;
 
-    printf("my private data store value: %d\n", get_pos_m(TestClassFDS)->value) ;
+    printf("my private data store value: %d\n", get_pds(TestClassFDS)->value) ;
 
-    free(pos_m) ;
+    free(pds) ;
 
-    destroy_private_object_store ;
+    destroy_private_data_store ;
 
     m(getobj(obj, mystring),print,noargs) ;
 

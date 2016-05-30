@@ -61,6 +61,7 @@ typedef obj_long (*obj_method)(va_list external_arglist, const AnyClass obj, ...
 
 typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, const obj_class cls, ...) ;
 
+typedef void (*obj_classdeinit)(const obj_class cls) ;
 
 #define obj_bitsizeof(type) sizeof(type) * CHAR_BIT
 
@@ -174,6 +175,8 @@ typedef struct Obj##classname##_s* classname
 
 #define make_method_final(methodname) obj_add_final_method(#methodname,cls)
 
+#define make_method_class_deinit(method) obj_add_classdeinit_method(method,cls)
+
 #define make_method_init(method) obj_add_init_method(method,cls)
 
 #define make_method_deinit(method) obj_add_deinit_method(method,cls)
@@ -241,6 +244,8 @@ name = va_arg(external_arglist,type) ;\
 } else { name = va_arg(method_arglist,type) ;}
 
 #define noargs 0
+
+#define new_class_deinit_method(method_name) static void method_name(obj_class cls)
 
 #define start_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj,...) {\
 va_list method_arglist ;\
@@ -344,18 +349,17 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 
-#define make_private_object_store_available obj_alloc_private_store_for_object(obj,cls)
+#define make_private_data_store_available obj_alloc_private_store_for_object(obj,cls)
 
-#define destroy_private_object_store obj_dealloc_private_store_for_object(obj,cls)
+#define destroy_private_data_store obj_dealloc_private_store_for_object(obj,cls)
 
-#define private_object_store (*obj_get_private_store_for_object(obj,cls))
+#define private_data_store (*obj_get_private_store_for_object(obj,cls))
 
-#define get_private_object_store(type) ((type)private_object_store)
+#define get_private_data_store(type) ((type)private_data_store)
 
-#define pos_m private_object_store
+#define pds private_data_store
 
-#define get_pos_m(type) get_private_object_store(type)
-
+#define get_pds(type) get_private_data_store(type)
 
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class((AnyClass)obj,cls)
 
@@ -425,6 +429,8 @@ void obj_class_dealloc( obj_class cls ) ;
 void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) ;
 
 void* obj_class_get_pointer( obj_class cls, const char* name ) ;
+
+void obj_add_classdeinit_method( obj_classdeinit classdeinit, obj_class cls ) ;
 
 void obj_add_init_method( obj_method method, obj_class cls ) ;
 

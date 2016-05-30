@@ -17,9 +17,11 @@
 
 #include "obj.h"
 
-struct obj_class_s { void* fast_data_structure ; obj_method init ; obj_method deinit ; RKStore methods ; RKStore final_methods ;
+struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; obj_method init ; obj_method deinit ;
     
-RKStore class_methods ; RKStore final_class_methods ; RKStore data ; RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
+RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ; RKStore data ;
+    
+RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
@@ -27,14 +29,19 @@ struct obj_ref_s { int strong ; AnyClass obj ; AnyClass base_obj ; } ;
 
 typedef struct obj_ref_s* obj_ref ;
 
-static void myitoa( obj_ulong val, char* string ) {
+static void ulong_to_string( obj_ulong val, char* string ) {
     
-    snprintf(string, sizeof(string), "%ld", val) ;
+    snprintf(string, sizeof(string), "%lu", val) ;
 }
 
  obj_long obj_default_func(va_list external_arglist, const AnyClass obj, ...) {
     
     return 0 ;
+}
+
+void obj_default_classdeinit( const obj_class cls ) {
+    
+    
 }
 
 AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
@@ -162,6 +169,8 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     cls->deinit = obj_default_func ;
     
+    cls->classdeinit = obj_default_classdeinit ;
+    
     cls->final_class_methods = RKStore_NewStore() ;
     
     cls->class_methods = RKStore_NewStore() ;
@@ -182,6 +191,8 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
 }
 
 void obj_class_dealloc( obj_class cls ) {
+    
+    cls->classdeinit(cls) ;
     
     RKStore_DestroyStore(cls->final_class_methods) ;
     
@@ -206,6 +217,11 @@ void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) {
 void* obj_class_get_pointer( obj_class cls, const char* name ) {
     
     return RKStore_GetItem(cls->data, name) ;
+}
+
+void obj_add_classdeinit_method( obj_classdeinit classdeinit, obj_class cls ) {
+    
+    cls->classdeinit = classdeinit ;
 }
 
 void obj_add_init_method( obj_method method, obj_class cls ) {
@@ -274,20 +290,24 @@ int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
 
 void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
+    if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
+    
     void* private_store = RKMem_NewMemOfType(void*) ;
     
     char id_string[100] ;
     
-    myitoa(obj->object_id, id_string) ;
+    ulong_to_string(obj->object_id, id_string) ;
     
     RKStore_AddItem(cls->private_stores, private_store, id_string) ;
 }
 
 void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
+    if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
+    
     char id_string[100] ;
     
-    myitoa(obj->object_id, id_string) ;
+    ulong_to_string(obj->object_id, id_string) ;
     
     void* private_store = RKStore_GetItem(cls->private_stores, id_string) ;
     
@@ -298,9 +318,11 @@ void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
 
 void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) {
     
+    if ( !obj_verify_object_is_of_class(obj, cls) ) return NULL ;
+    
     char id_string[100] ;
     
-    myitoa(obj->object_id, id_string) ;
+    ulong_to_string(obj->object_id, id_string) ;
     
     return RKStore_GetItem(cls->private_stores, id_string) ;
 }
