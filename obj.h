@@ -151,6 +151,33 @@ return NULL ;\
 }\
 static void classname##_obj_class_init_method(const obj_class cls)
 
+#define new_abstract_class(classname)\
+static void classname##_obj_class_init_method(const obj_class cls) ;\
+obj_class Def##classname( int mode, obj_class subclass ) {\
+static obj_class cls = NULL ;\
+static int count = 0 ;\
+if (mode == -1) {\
+count-- ;\
+if ( count <= 0 ) {\
+count = 0 ;\
+cls = NULL ;\
+}\
+}\
+if (mode == 0) {\
+count++ ;\
+if (cls == NULL){\
+}\
+return cls ;\
+}\
+if (mode == 1) {\
+classname##_obj_class_init_method(subclass) ;\
+return subclass ;\
+}\
+return NULL ;\
+}\
+static void classname##_obj_class_init_method(const obj_class cls)
+
+
 #define make_class_subclass_of(superclass) Def##superclass(1, cls)
 
 #define make_cls_available_for(class) static obj_class class##_cls = NULL
