@@ -186,6 +186,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define get_cls_for(class) class##_cls
 
+#define declare_class(classname) typedef struct Obj##classname##_s* classname
 
 #define use_class(classname) obj_class Def##classname( int mode, obj_class subclass ) ; \
 typedef struct Obj##classname##_s* classname
