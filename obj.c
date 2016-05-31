@@ -64,6 +64,8 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
     start_arglist(arglist, the_classdef) ;
     
+    if ( obj->class_of_object->final_init != get_null_method ) obj->class_of_object->init = obj->class_of_object->final_init ;
+    
     obj->class_of_object->init(arglist,(AnyClass)obj,NULL,obj->class_of_object) ;
     
     end_arglist(arglist) ;
@@ -81,6 +83,8 @@ static void obj_dealloc_refs( void* data ) {
 }
 
 void obj_object_dealloc( AnyClass obj ) {
+    
+    if ( obj->class_of_object->final_deinit != get_null_method ) obj->class_of_object->deinit = obj->class_of_object->final_deinit ;
     
     obj->class_of_object->deinit(NULL,(AnyClass)obj,NULL,obj->class_of_object) ;
     
