@@ -19,9 +19,9 @@
 
 struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; obj_method init ; obj_method deinit ;
     
-RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ; RKStore data ;
+obj_method final_init ; obj_method final_deinit ; RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ;
     
-RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
+RKStore data ; RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
@@ -165,6 +165,10 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     obj_class cls = RKMem_NewMemOfType(struct obj_class_s) ;
     
+    cls->final_init = obj_default_func ;
+    
+    cls->final_deinit = obj_default_func ;
+    
     cls->init = obj_default_func ;
     
     cls->deinit = obj_default_func ;
@@ -226,12 +230,22 @@ void obj_add_classdeinit_method( obj_classdeinit classdeinit, obj_class cls ) {
 
 void obj_add_init_method( obj_method method, obj_class cls ) {
     
-    cls->init = method ;
+    if ( cls->final_init == get_null_method ) cls->init = method ;
 }
 
 void obj_add_deinit_method( obj_method method, obj_class cls ) {
     
-    cls->deinit = method ;
+    if ( cls->final_deinit == get_null_method ) cls->deinit = method ;
+}
+
+void obj_add_final_init_method( obj_method method, obj_class cls ) {
+    
+    if ( cls->final_init == get_null_method ) cls->final_init = method ;
+}
+
+void obj_add_final_deinit_method( obj_method method, obj_class cls ) {
+    
+    if ( cls->final_deinit == get_null_method ) cls->final_deinit = method ;
 }
 
 void obj_add_method( obj_method method, const char* name, obj_class cls ) {
