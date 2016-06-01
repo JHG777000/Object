@@ -30,7 +30,7 @@ start_method( my_init_method, argfromlist(myfloat, obj_float) arg(cls, obj_class
 
     get_fds(TestClassFDS)->value = 22 ;
 
-    make_private_data_store_available ;
+    make_protected_data_store_available ;
 
     pds = new_record(TestClassFDS) ;
 
@@ -52,7 +52,7 @@ start_method( my_deinit_method, arg(cls, obj_class) )
 
     free(pds) ;
 
-    destroy_private_data_store ;
+    destroy_protected_data_store ;
 
     m(getobj(obj, mystring),print,noargs) ;
 
