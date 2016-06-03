@@ -260,7 +260,7 @@ typedef struct Obj##classname##_s* classname
 
 #define class_get_pointer(class,name) obj_class_get_pointer(class,#name)
 
-#define class_gp(class,name) obj_class_get_pointer(class,name)
+#define class_gp(class,name) class_get_pointer(class,name)
 
 
 #define add_ref_count(object) obj_add_ref_count((AnyClass)object)
