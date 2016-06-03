@@ -56,7 +56,6 @@ typedef unsigned long obj_ulong ;
 
 typedef va_list obj_arglist ;
 
-
 typedef obj_long (*obj_method)(va_list external_arglist, const AnyClass obj, ...) ;
 
 typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, const obj_class cls, ...) ;
@@ -404,6 +403,7 @@ method_args\
 #define store_record(name,record) store_pointer(obj,name,record)
 
 #define get_record(name,recordtype) ((recordtype)get_pointer(obj,name))
+
 
 #define define_data_set(dataset,...) define_record_type(dataset##type,__VA_ARGS__)
 

@@ -48,7 +48,7 @@ start_method( my_deinit_method, arg(cls, obj_class) )
 
     free(fds) ;
 
-    printf("my private data store value: %d\n", get_pds(TestClassFDS)->value) ;
+    printf("my protected data store value: %d\n", get_pds(TestClassFDS)->value) ;
 
     free(pds) ;
 

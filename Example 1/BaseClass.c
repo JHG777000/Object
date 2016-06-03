@@ -12,7 +12,6 @@ start_method(my_init_method,)
 
 end_method
 
-
 start_method(my_deinit_method,)
 
 end_method
