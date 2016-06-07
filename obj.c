@@ -313,8 +313,6 @@ int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
 
 void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
-    if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
-    
     void* private_store = RKMem_NewMemOfType(void*) ;
     
     char id_string[100] ;
@@ -325,8 +323,6 @@ void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
 }
 
 void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
-    
-    if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
     
     char id_string[100] ;
     
@@ -340,8 +336,6 @@ void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
 }
 
 void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) {
-    
-    if ( !obj_verify_object_is_of_class(obj, cls) ) return NULL ;
     
     char id_string[100] ;
     
