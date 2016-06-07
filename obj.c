@@ -21,13 +21,22 @@ struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; o
     
 obj_method final_init ; obj_method final_deinit ; RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ;
     
-RKStore data ; RKStore private_stores ; obj_ulong object_id_count ; obj_classdef the_classdef ; } ;
+RKStore data ; RKStore private_stores ; obj_classdef the_classdef ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
 struct obj_ref_s { int strong ; AnyClass obj ; AnyClass base_obj ; } ;
 
 typedef struct obj_ref_s* obj_ref ;
+
+static int get_obj_id( void ) {
+    
+    static RKT_AtomicInt count = 0 ;
+    
+    RKTasks_AtomicInc(&count) ;
+    
+    return count ;
+}
 
 static void ulong_to_string( obj_ulong val, char* string ) {
     
@@ -56,9 +65,7 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
     obj->refcount = 0 ;
     
-    obj->class_of_object->object_id_count++ ;
-    
-    obj->object_id = obj->class_of_object->object_id_count ;
+    obj->object_id = get_obj_id() ;
     
     obj_arglist arglist ;
     
@@ -191,8 +198,6 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     cls->private_stores = RKStore_NewStore() ;
     
-    cls->object_id_count = 0 ;
-    
     cls->the_classdef = the_classdef ;
     
     return cls ;
@@ -306,7 +311,7 @@ int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
     return 0 ;
 }
 
-void obj_alloc_protected_store_for_object( AnyClass obj, obj_class cls ) {
+void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
     if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
     
@@ -319,7 +324,7 @@ void obj_alloc_protected_store_for_object( AnyClass obj, obj_class cls ) {
     RKStore_AddItem(cls->private_stores, private_store, id_string) ;
 }
 
-void obj_dealloc_protected_store_for_object( AnyClass obj, obj_class cls ) {
+void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
     if ( !obj_verify_object_is_of_class(obj, cls) ) return ;
     
@@ -334,7 +339,7 @@ void obj_dealloc_protected_store_for_object( AnyClass obj, obj_class cls ) {
     RKStore_RemoveItem(cls->private_stores, id_string) ;
 }
 
-void** obj_get_protected_store_for_object( AnyClass obj, obj_class cls ) {
+void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) {
     
     if ( !obj_verify_object_is_of_class(obj, cls) ) return NULL ;
     

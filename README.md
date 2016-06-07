@@ -27,4 +27,4 @@ Support for manual memory management, manual reference counting, run-time automa
 
 Header files are not needed for classes.
 
-Dependencies: RKMem, from RKLib.
+Dependencies: RKMem and RKTasks, from RKLib.

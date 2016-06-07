@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <limits.h>
 #include "RKMem.h"
+#include "RKTasks.h"
 
 typedef struct obj_class_s* obj_class ;
 
@@ -380,17 +381,17 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 
-#define make_protected_data_store_available obj_alloc_protected_store_for_object(obj,cls)
+#define make_private_data_store_available obj_alloc_private_store_for_object(obj,cls)
 
-#define destroy_protected_data_store obj_dealloc_protected_store_for_object(obj,cls)
+#define destroy_private_data_store obj_dealloc_private_store_for_object(obj,cls)
 
-#define protected_data_store (*obj_get_protected_store_for_object(obj,cls))
+#define private_data_store (*obj_get_private_store_for_object(obj,cls))
 
-#define get_protected_data_store(type) ((type)protected_data_store)
+#define get_private_data_store(type) ((type)private_data_store)
 
-#define pds protected_data_store
+#define pds private_data_store
 
-#define get_pds(type) get_protected_data_store(type)
+#define get_pds(type) get_private_data_store(type)
 
 
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class((AnyClass)obj,cls)
@@ -489,10 +490,10 @@ obj_classdef obj_get_classdef_from_class( obj_class cls ) ;
 
 int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) ;
 
-void obj_alloc_protected_store_for_object( AnyClass obj, obj_class cls ) ;
+void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
-void obj_dealloc_protected_store_for_object( AnyClass obj, obj_class cls ) ;
+void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
-void** obj_get_protected_store_for_object( AnyClass obj, obj_class cls ) ;
+void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
 #endif /* obj_h */
