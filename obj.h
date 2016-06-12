@@ -23,7 +23,6 @@
 #include <stdarg.h>
 #include <limits.h>
 #include "RKMem.h"
-#include "RKTasks.h"
 
 typedef struct obj_class_s* obj_class ;
 

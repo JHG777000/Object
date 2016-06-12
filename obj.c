@@ -16,6 +16,7 @@
  */
 
 #include "obj.h"
+#include "RKTasks.h"
 
 struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; obj_method init ; obj_method deinit ;
     
