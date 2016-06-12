@@ -235,6 +235,8 @@ typedef struct Obj##classname##_s* classname
 
 #define keep_object(object1,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,NULL,1)
 
+#define ko(object1,object2) keep_object(object1,object2)
+
 #define store_object_strong(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,1)
 
 #define store_object_weak(object1,name,object2) obj_store_object((AnyClass)object1,(AnyClass)object2,#name,0)
@@ -247,6 +249,7 @@ typedef struct Obj##classname##_s* classname
 
 #define getobj(object,name) get_object(object,name)
 
+
 #define store_pointer(object,name,pointer) obj_store_pointer((AnyClass)object,pointer,#name)
 
 #define sp(object,name,pointer) store_pointer(object,name,pointer)
@@ -254,6 +257,20 @@ typedef struct Obj##classname##_s* classname
 #define get_pointer(object,name) obj_get_pointer((AnyClass)object,#name)
 
 #define gp(object,name) get_pointer((AnyClass)object,name)
+
+
+#define make_private_data_store_available obj_alloc_private_store_for_object(obj,cls)
+
+#define destroy_private_data_store obj_dealloc_private_store_for_object(obj,cls)
+
+#define store_private_pointer(name,pointer) obj_store_private_pointer(obj,cls,pointer,#name)
+
+#define spp(name,pointer) store_private_pointer(name,pointer)
+
+#define get_private_pointer(name) obj_get_private_pointer(obj,cls,#name)
+
+#define gpp(name) get_private_pointer(name)
+
 
 #define class_store_pointer(class,name,pointer) obj_class_store_pointer(class,pointer,#name)
 
@@ -381,19 +398,6 @@ method_args\
 #define get_fds_of(entity,type) get_fast_data_store_of(entity,type)
 
 
-#define make_private_data_store_available obj_alloc_private_store_for_object(obj,cls)
-
-#define destroy_private_data_store obj_dealloc_private_store_for_object(obj,cls)
-
-#define private_data_store (*obj_get_private_store_for_object(obj,cls))
-
-#define get_private_data_store(type) ((type)private_data_store)
-
-#define pds private_data_store
-
-#define get_pds(type) get_private_data_store(type)
-
-
 #define is_object_of_class(obj,cls) obj_verify_object_is_of_class((AnyClass)obj,cls)
 
 
@@ -405,6 +409,10 @@ method_args\
 
 #define get_record(name,recordtype) ((recordtype)get_pointer(obj,name))
 
+#define store_private_record(name,record) store_private_pointer(name,record)
+
+#define get_private_record(name,recordtype) ((recordtype)get_private_pointer(name))
+
 
 #define define_data_set(dataset,...) define_record_type(dataset##type,__VA_ARGS__)
 
@@ -415,6 +423,15 @@ store_record(dataset, dataset##tmp)
 
 #define destroy_set(dataset) free(get_set(dataset))
 
+
+#define define_private_data_set(dataset,...) define_record_type(dataset##type_private,__VA_ARGS__)
+
+#define store_private_set(dataset) dataset##type_private dataset##tmp_private = new_record( dataset##type_private );\
+store_private_record(dataset, dataset##tmp_private)
+
+#define get_private_set(dataset) get_private_record(dataset, dataset##type_private)
+
+#define destroy_private_set(dataset) free(get_private_set(dataset))
 
 #define send_object_msg(obj,msg,...) obj_get_method((AnyClass)obj,msg)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 
@@ -494,6 +511,8 @@ void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
 void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) ;
 
-void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) ;
+void obj_store_private_pointer( AnyClass obj, obj_class cls, void* pointer, const char* name ) ;
+
+void* obj_get_private_pointer( AnyClass obj, obj_class cls, const char* name ) ;
 
 #endif /* obj_h */

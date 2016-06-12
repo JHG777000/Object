@@ -14,7 +14,9 @@ use_class(StringClass) ;
 
 make_cls_available_for(TestClass) ;
 
-define_record_type(TestClassFDS, int value ; ) ;
+define_record_type( TestClassFDS, int value ; ) ;
+
+define_private_data_set( TestClassPrivate, int value ; ) ;
 
 start_method( my_init_method, argfromlist(myfloat, obj_float) arg(cls, obj_class))
 
@@ -30,11 +32,13 @@ start_method( my_init_method, argfromlist(myfloat, obj_float) arg(cls, obj_class
 
     get_fds(TestClassFDS)->value = 22 ;
 
+    cls = get_cls_for(TestClass) ;
+
     make_private_data_store_available ;
 
-    pds = new_record(TestClassFDS) ;
+    store_private_set(TestClassPrivate) ;
 
-    get_pds(TestClassFDS)->value = 34 ;
+    get_private_set(TestClassPrivate)->value = 34 ;
 
 end_method
 
@@ -48,9 +52,11 @@ start_method( my_deinit_method, arg(cls, obj_class) )
 
     free(fds) ;
 
-    printf("my private data store value: %d\n", get_pds(TestClassFDS)->value) ;
+    cls = get_cls_for(TestClass) ;
 
-    free(pds) ;
+    printf("my private value: %d\n", get_private_set(TestClassPrivate)->value) ;
+
+    destroy_private_set(TestClassPrivate) ;
 
     destroy_private_data_store ;
 

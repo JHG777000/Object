@@ -313,7 +313,7 @@ int obj_verify_object_is_of_class( AnyClass obj, obj_class cls ) {
 
 void obj_alloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
-    void* private_store = RKMem_NewMemOfType(void*) ;
+    RKStore private_store = RKStore_NewStore() ;
     
     char id_string[100] ;
     
@@ -328,18 +328,31 @@ void obj_dealloc_private_store_for_object( AnyClass obj, obj_class cls ) {
     
     ulong_to_string(obj->object_id, id_string) ;
     
-    void* private_store = RKStore_GetItem(cls->private_stores, id_string) ;
+    RKStore private_store = RKStore_GetItem(cls->private_stores, id_string) ;
     
-    free(private_store) ;
+    RKStore_DestroyStore(private_store) ;
     
     RKStore_RemoveItem(cls->private_stores, id_string) ;
 }
 
-void** obj_get_private_store_for_object( AnyClass obj, obj_class cls ) {
+void obj_store_private_pointer( AnyClass obj, obj_class cls, void* pointer, const char* name ) {
     
     char id_string[100] ;
     
     ulong_to_string(obj->object_id, id_string) ;
     
-    return RKStore_GetItem(cls->private_stores, id_string) ;
+    RKStore private_store = RKStore_GetItem(cls->private_stores, id_string) ;
+    
+    RKStore_AddItem(private_store, pointer, name) ;
+}
+
+void* obj_get_private_pointer( AnyClass obj, obj_class cls, const char* name ) {
+    
+    char id_string[100] ;
+    
+    ulong_to_string(obj->object_id, id_string) ;
+    
+    RKStore private_store = RKStore_GetItem(cls->private_stores, id_string) ;
+    
+    return RKStore_GetItem(private_store, name) ;
 }
