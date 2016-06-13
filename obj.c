@@ -236,7 +236,7 @@ void obj_class_dealloc( obj_class cls ) {
     free(cls) ;
 }
 
-void obj_add_class_ref_to_subclass( obj_class cls, obj_class subclass) {
+void obj_add_class_ref_to_subclass( obj_class cls, obj_class subclass ) {
     
     RKList_AddToList(subclass->superclass_refs, cls) ;
 }

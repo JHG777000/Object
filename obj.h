@@ -88,7 +88,7 @@ static int count = 0 ;\
  if (mode == 1) {\
   Def##classname(0, NULL) ;\
   classname##_obj_class_init_method(subclass) ;\
-  obj_add_class_ref_to_subclass( cls, subclass) ;\
+  obj_add_class_ref_to_subclass( cls, subclass ) ;\
   return subclass ;\
  }\
 return NULL ;\
@@ -119,7 +119,7 @@ return cls ;\
 if (mode == 1) {\
 Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
-obj_add_class_ref_to_subclass( cls, subclass) ;\
+obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
 }\
 return NULL ;\
@@ -178,7 +178,7 @@ return NULL ;\
 if (mode == 1) {\
 Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
-obj_add_class_ref_to_subclass( cls, subclass) ;\
+obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
 }\
 return NULL ;\
@@ -486,7 +486,7 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) ;
 
 void obj_class_dealloc( obj_class cls ) ;
 
-void obj_add_class_ref_to_subclass( obj_class cls, obj_class subclass) ;
+void obj_add_class_ref_to_subclass( obj_class cls, obj_class subclass ) ;
 
 void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) ;
 

@@ -14,9 +14,9 @@ use_class(StringClass) ;
 
 void Example1( void ) {
     
-    TestClass myobject = new_object(TestClass, 10.0) ;
+    TestClass myobject = new_object(TestClass, 10.0) ; //new_object(Class, arguments...)
     
-    m(myobject, my_first_method, 7) ;
+    m(myobject, my_first_method, 7) ; // m is method invoke: m(object, method name, arguments...)
     
     m(myobject, my_method, 10, 33) ;
     
@@ -36,11 +36,11 @@ void Example1( void ) {
     
     m(string, print size of the object on the stack in bytes, noargs) ;
     
-    if (!m(string, hello world, noargs)) {
+    if (!m(string, hello world, noargs)) { //methods by default return 1, if a method is not found 0 is returned
         
         printf("hello world: not found! \n") ;
         
-        if ( get_method(string, hello world) == get_null_method  ) printf("hello world: not found! 2 \n") ;
+        if ( get_method(string, hello world) == get_null_method  ) printf("hello world: not found! 2 \n") ; //unresolved methods are equal to get_null_method
         
     }
     
