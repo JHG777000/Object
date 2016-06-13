@@ -58,7 +58,7 @@ typedef va_list obj_arglist ;
 
 typedef obj_long (*obj_method)(va_list external_arglist, const AnyClass obj, ...) ;
 
-typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, const obj_class cls, ...) ;
+typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, obj_class cls, ...) ;
 
 typedef void (*obj_classdeinit)(const obj_class cls) ;
 
@@ -86,7 +86,9 @@ static int count = 0 ;\
  return cls ;\
  }\
  if (mode == 1) {\
+  Def##classname(0, NULL) ;\
   classname##_obj_class_init_method(subclass) ;\
+  obj_add_class_ref_to_subclass( cls, #classname, subclass) ;\
   return subclass ;\
  }\
 return NULL ;\
@@ -115,7 +117,9 @@ classname##_obj_class_init_method(cls) ;\
 return cls ;\
 }\
 if (mode == 1) {\
+Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
+obj_add_class_ref_to_subclass( cls, #classname, subclass) ;\
 return subclass ;\
 }\
 return NULL ;\
@@ -159,17 +163,22 @@ if (mode == -1) {\
 count-- ;\
 if ( count <= 0 ) {\
 count = 0 ;\
+obj_class_dealloc(cls) ;\
 cls = NULL ;\
 }\
 }\
 if (mode == 0) {\
 count++ ;\
 if (cls == NULL){\
+cls = obj_class_alloc(Def##classname) ;\
+classname##_obj_class_init_method(cls) ;\
 }\
-return cls ;\
+return NULL ;\
 }\
 if (mode == 1) {\
+Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
+obj_add_class_ref_to_subclass( cls, #classname, subclass) ;\
 return subclass ;\
 }\
 return NULL ;\
@@ -181,7 +190,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define make_cls_available_for(class) static obj_class class##_cls = NULL
 
-#define init_cls_for(class) class##_cls = cls
+#define init_cls_for(class) if (class##_cls == NULL) class##_cls = cls
 
 #define get_cls_for(class) class##_cls
 
@@ -306,11 +315,12 @@ method_args\
 #define start_static_method(method_name,method_args) obj_long method_name(va_list external_arglist, const AnyClass obj,...) {\
 va_list method_arglist ;\
 va_start(method_arglist,obj) ;\
+if (obj != NULL) return -2 ; \
 arg(obj_nullptr,void * const)\
 if (obj_nullptr != NULL) return -1 ;\
 method_args\
 
-#define start_class_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj, const obj_class cls,...) {\
+#define start_class_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj, obj_class cls,...) {\
 va_list method_arglist ;\
 va_start(method_arglist,cls) ;\
 if (cls == NULL) {printf("Object Runtime: Error, access control violation or corrupted 'cls' pointer.\n");exit(EXIT_FAILURE);}\
@@ -475,6 +485,8 @@ void obj_sub_ref_count( AnyClass obj ) ;
 obj_class obj_class_alloc( obj_classdef the_classdef ) ;
 
 void obj_class_dealloc( obj_class cls ) ;
+
+void obj_add_class_ref_to_subclass( obj_class cls, const char* classname, obj_class subclass) ;
 
 void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) ;
 
