@@ -22,7 +22,7 @@ struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; o
     
 obj_method final_init ; obj_method final_deinit ; RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ;
     
-RKStore data ; RKStore private_stores ; obj_classdef the_classdef ; RKStore superclass_refs ; } ;
+RKStore data ; RKStore private_stores ; obj_classdef the_classdef ; RKList superclass_refs ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
@@ -201,7 +201,7 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     cls->the_classdef = the_classdef ;
     
-    cls->superclass_refs = RKStore_NewStore() ;
+    cls->superclass_refs = RKList_NewList() ;
     
     return cls ;
 }
@@ -229,16 +229,16 @@ void obj_class_dealloc( obj_class cls ) {
     
     RKStore_DestroyStore(cls->private_stores) ;
 
-    RKStore_IterateStoreWith(obj_dealloc_superclass_refs, cls->superclass_refs) ;
+    RKList_IterateListWith(obj_dealloc_superclass_refs, cls->superclass_refs) ;
     
-    RKStore_DestroyStore(cls->superclass_refs) ;
+    RKList_DeleteList(cls->superclass_refs) ;
     
     free(cls) ;
 }
 
-void obj_add_class_ref_to_subclass( obj_class cls, const char* classname, obj_class subclass) {
+void obj_add_class_ref_to_subclass( obj_class cls, obj_class subclass) {
     
-    RKStore_AddItem(subclass->superclass_refs, cls, classname) ;
+    RKList_AddToList(subclass->superclass_refs, cls) ;
 }
 
 void obj_class_store_pointer( obj_class cls, void* pointer, const char* name ) {
