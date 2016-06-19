@@ -5,7 +5,7 @@ Basically, Objective-C via macros.
 
 --Features:
 
-Dynamic dispatch for methods, references(other objects), and data(pointers).
+Dynamic dispatch, and late binding for methods, references(other objects), and data(pointers).
 
 Support for private methods.
 
@@ -13,7 +13,9 @@ Support for final methods, make a method immutable(can not be overridden).
 
 Support for static methods, methods that need no object instance.
 
-Support for class methods, protected methods that allows access to the class pointer.
+Support for class methods, methods that are called on the class.
+
+Support for protected methods, protected methods that can only be accessed by a subclass.
 
 Support for data to be held in a class.
 

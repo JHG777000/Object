@@ -12,7 +12,7 @@ use_class(BaseClass) ;
 
 use_class(StringClass) ;
 
-make_cls_available_for(TestClass) ;
+declare_class(TestClass) ;
 
 define_record_type( TestClassFDS, int value ; ) ;
 
@@ -94,17 +94,23 @@ start_method( my_method, arg(myint,int) arg(myint2, obj_interger) )
 
 end_method
 
-start_class_method(print_hello_world_from_test,)
-
-   cm(obj, print_hello_world, noargs) ;
-
-end_method
-
-start_method(print_hello,)
+start_method(print_hello_world_from_test,)
 
    obj_class cls = get_cls_for(TestClass) ;
 
-   cm(obj, print_hello_world_from_test, noargs) ;
+   prm(obj, print_hello_world, noargs) ;
+
+end_method
+
+start_class_method(TestClass, print_hello, arg(TestObj, TestClass) )
+
+ prm(TestObj, print_hello_world_from_test, noargs) ;
+
+end_method
+
+start_class_method(TestClass, print_hi, )
+
+ printf("Hi!!!!\n") ;
 
 end_method
 
@@ -120,9 +126,9 @@ new_class(TestClass) {
     
     make_method_deinit(my_deinit_method) ;
     
-    make_class_method_public(print_hello_world_from_test) ;
+    make_class_method_public(print_hello) ;
     
-    make_method_public(print_hello) ;
+    make_class_method_public(print_hi) ;
     
-    init_cls_for(TestClass) ;
+    make_protected_method(print_hello_world_from_test) ;
 }

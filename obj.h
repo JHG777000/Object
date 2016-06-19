@@ -58,11 +58,32 @@ typedef va_list obj_arglist ;
 
 typedef obj_long (*obj_method)(va_list external_arglist, const AnyClass obj, ...) ;
 
-typedef obj_long (*obj_classmethod)(va_list external_arglist, const AnyClass obj, obj_class cls, ...) ;
+typedef obj_long (*obj_classmethod)(va_list external_arglist, ...) ;
 
 typedef void (*obj_classdeinit)(const obj_class cls) ;
 
 #define obj_bitsizeof(type) sizeof(type) * CHAR_BIT
+
+#define alloc_class(classname) Def##classname(2, NULL)
+
+#define get_set_cls_for_class(classname,cls,mode) classname##_obj_get_set_cls( cls, mode )
+
+#define make_get_set_cls_for_class(classname) static obj_class classname##_obj_get_set_cls( obj_class cls, int mode ) {\
+static obj_class the_cls = NULL ;\
+if ( mode ) {\
+ if (the_cls == NULL) alloc_class(classname) ;\
+ return the_cls ;\
+ } else {\
+ if (the_cls == NULL) the_cls = cls ;\
+ }\
+return NULL ;\
+}
+
+#define get_class_method_from_class(classname,methodname) obj_get_class_method_from_class_##classname(#methodname)
+
+#define make_get_class_method_from_class(classname) obj_method obj_get_class_method_from_class_##classname( const char* methodname ) {\
+return obj_get_class_method(get_set_cls_for_class(classname,NULL,1),methodname) ; \
+}
 
 #define new_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
@@ -82,6 +103,7 @@ static int count = 0 ;\
   if (cls == NULL){\
    cls = obj_class_alloc(Def##classname) ;\
    classname##_obj_class_init_method(cls) ;\
+   get_set_cls_for_class(classname,cls,0) ;\
    }\
  return cls ;\
  }\
@@ -90,6 +112,14 @@ static int count = 0 ;\
   classname##_obj_class_init_method(subclass) ;\
   obj_add_class_ref_to_subclass( cls, subclass ) ;\
   return subclass ;\
+ }\
+ if (mode == 2) {\
+   if (cls == NULL){\
+    cls = obj_class_alloc(Def##classname) ;\
+    classname##_obj_class_init_method(cls) ;\
+    get_set_cls_for_class(classname,cls,0) ;\
+   }\
+  return cls ;\
  }\
 return NULL ;\
 }\
@@ -113,6 +143,7 @@ count++ ;\
 if (cls == NULL){\
 cls = obj_class_alloc(Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
@@ -121,6 +152,14 @@ Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
+}\
+if (mode == 2) {\
+if (cls == NULL){\
+cls = obj_class_alloc(Def##classname) ;\
+classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
+}\
+return cls ;\
 }\
 return NULL ;\
 }\
@@ -144,11 +183,20 @@ count++ ;\
 if (cls == NULL){\
 cls = obj_class_alloc(Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
 if (mode == 1) {\
 return NULL ;\
+}\
+if (mode == 2) {\
+if (cls == NULL){\
+cls = obj_class_alloc(Def##classname) ;\
+classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
+}\
+return cls ;\
 }\
 return NULL ;\
 }\
@@ -172,6 +220,7 @@ count++ ;\
 if (cls == NULL){\
 cls = obj_class_alloc(Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
 }\
 return NULL ;\
 }\
@@ -181,6 +230,14 @@ classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
 }\
+if (mode == 2) {\
+if (cls == NULL){\
+cls = obj_class_alloc(Def##classname) ;\
+classname##_obj_class_init_method(cls) ;\
+get_set_cls_for_class(classname,cls,0) ;\
+}\
+return cls ;\
+}\
 return NULL ;\
 }\
 static void classname##_obj_class_init_method(const obj_class cls)
@@ -188,19 +245,21 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define make_class_subclass_of(superclass) Def##superclass(1, cls)
 
-#define make_cls_available_for(class) static obj_class class##_cls = NULL
-
-#define init_cls_for(class) if (class##_cls == NULL) class##_cls = cls
-
-#define get_cls_for(class) class##_cls
-
-#define declare_class(classname) typedef struct Obj##classname##_s* classname
+#define get_cls_for(class) get_set_cls_for_class(class,NULL,1)
 
 #define use_class(classname) obj_class Def##classname( int mode, obj_class subclass ) ; \
+obj_method obj_get_class_method_from_class_##classname( const char* methodname ) ;\
 typedef struct Obj##classname##_s* classname
 
-#define use_private_class(classname) static obj_class Def##classname( int mode, obj_class subclass ) ; \
-typedef struct Obj##classname##_s* classname
+#define declare_class(classname) use_class(classname) ; \
+make_get_set_cls_for_class(classname) \
+make_get_class_method_from_class(classname)
+
+#define declare_private_class(classname) static use_class(classname) ; \
+make_get_set_cls_for_class(classname) \
+make_get_class_method_from_class(classname)
+
+#define use_class_type(classname) typedef struct Obj##classname##_s* classname
 
 #define use_static_method(methodname) obj_long methodname(va_list external_arglist, const AnyClass obj, ...)
 
@@ -220,6 +279,12 @@ typedef struct Obj##classname##_s* classname
 #define make_method_final_init(method) obj_add_final_init_method(method,cls)
 
 #define make_method_final_deinit(method) obj_add_final_deinit_method(method,cls)
+
+#define make_protected_method(method) obj_add_protected_method(method,#method,cls)
+
+#define make_protected_method_mask(method,methodname) obj_add_protected_method(method,#methodname,cls)
+
+#define make_protected_method_final(methodname) obj_add_final_protected_method(#methodname,cls)
 
 #define make_class_method_public(method) obj_add_class_method((obj_method)method,#method,cls)
 
@@ -320,13 +385,13 @@ arg(obj_nullptr,void * const)\
 if (obj_nullptr != NULL) return -1 ;\
 method_args\
 
-#define start_class_method(method_name,method_args) static obj_long method_name(va_list external_arglist, const AnyClass obj, obj_class cls,...) {\
+#define start_class_method(classname,method_name,method_args) static obj_long method_name(va_list external_arglist, ...) {\
 va_list method_arglist ;\
-va_start(method_arglist,cls) ;\
-if (cls == NULL) {printf("Object Runtime: Error, access control violation or corrupted 'cls' pointer.\n");exit(EXIT_FAILURE);}\
-if ( !obj_verify_object_is_of_class(obj,cls) ) return -2 ;\
+va_start(method_arglist,external_arglist) ;\
+const obj_class cls = get_cls_for(classname) ;\
 void * const obj_nullptr = NULL ;\
 if (obj_nullptr != NULL) return -1 ;\
+if (obj_nullptr == cls) return -2 ;\
 method_args\
 
 #define end_method va_end(method_arglist) ; return 1 ; }
@@ -369,17 +434,24 @@ method_args\
 #define static_method_invoke_with_arglist(method,arglist,...) pma(NULL,method,arglist,__VA_ARGS__)
 #define sma(method,...) static_method_invoke_with_arglist(method,__VA_ARGS__)
 
-#define class_method_invoke(obj,method,...) ((obj_classmethod)obj_get_class_method(cls,#method))(NULL,(AnyClass)obj,cls,__VA_ARGS__)
-#define cm(obj,method,...) class_method_invoke(obj,method,__VA_ARGS__)
+#define protected_method_invoke(obj,method,...) obj_get_protected_method((AnyClass)obj,cls,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
+#define prm(obj,method,...) protected_method_invoke(obj,method,__VA_ARGS__)
 
-#define class_method_invoke_with_arglist(obj,method,arglist,...) ((obj_classmethod)obj_get_class_method(cls,#method))(arglist,(AnyClass)obj,cls,__VA_ARGS__)
-#define cma(obj,method,arglist,...) class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
+#define protected_method_invoke_with_arglist(obj,method,arglist,...) obj_get_protected_method((AnyClass)obj,cls,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
+#define prma(obj,method,arglist,...) protected_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define private_class_method_invoke(obj,method,...) ((obj_classmethod)method)(NULL,(AnyClass)obj,cls,__VA_ARGS__)
-#define pcm(obj,method,...) private_class_method_invoke(obj,method,__VA_ARGS__)
+#define class_method_invoke(classname,method,...) ((obj_classmethod)get_class_method_from_class(classname,method))(NULL,__VA_ARGS__)
+#define cm(classname,method,...) class_method_invoke(classname,method,__VA_ARGS__)
 
-#define private_class_method_invoke_with_arglist(obj,method,arglist,...) ((obj_classmethod)method)(arglist,(AnyClass)obj,cls,__VA_ARGS__)
-#define pcma(obj,method,arglist,...) private_class_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
+#define class_method_invoke_with_arglist(classname,method,arglist,...) ((obj_classmethod)get_class_method_from_class(classname,method))(arglist,__VA_ARGS__)
+#define cma(classname,method,arglist,...) class_method_invoke_with_arglist(classname,method,arglist,__VA_ARGS__)
+
+#define private_class_method_invoke(method,...) ((obj_classmethod)method)(NULL,__VA_ARGS__)
+#define pcm(method,...) private_class_method_invoke(method,__VA_ARGS__)
+
+#define private_class_method_invoke_with_arglist(method,arglist,...) ((obj_classmethod)method)(arglist,__VA_ARGS__)
+#define pcma(method,arglist,...) private_class_method_invoke_with_arglist(method,arglist,__VA_ARGS__)
+
 
 
 #define fast_data_store ((obj_fds_type)obj)->fast_data_structure
@@ -507,6 +579,12 @@ void obj_add_method( obj_method method, const char* name, obj_class cls ) ;
 void obj_add_final_method( const char* name, obj_class cls ) ;
 
 obj_method obj_get_method( AnyClass obj, const char* name ) ;
+
+void obj_add_protected_method( obj_method method, const char* name, obj_class cls ) ;
+
+void obj_add_final_protected_method( const char* name, obj_class cls ) ;
+
+obj_method obj_get_protected_method( AnyClass obj, obj_class cls, const char* name ) ;
 
 void obj_add_class_method( obj_method method, const char* name, obj_class cls ) ;
 

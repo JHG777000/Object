@@ -11,6 +11,8 @@
 
 use_class(BaseClass) ;
 
+declare_class(StringClass) ;
+
 start_method(my_init_method, argfromlist(string,char*))
 
   obj_long size = strlen(string) ;

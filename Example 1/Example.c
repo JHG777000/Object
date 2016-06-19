@@ -14,13 +14,15 @@ use_class(StringClass) ;
 
 void Example1( void ) {
     
+    cm(TestClass, print_hi, noargs) ;
+    
     TestClass myobject = new_object(TestClass, 10.0) ; //new_object(Class, arguments...)
     
     m(myobject, my_first_method, 7) ; // m is method invoke: m(object, method name, arguments...)
     
     m(myobject, my_method, 10, 33) ;
     
-    m(myobject, print_hello, noargs) ;
+    cm(TestClass, print_hello, myobject) ;
     
     free_object(myobject) ;
     

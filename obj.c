@@ -20,9 +20,9 @@
 
 struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; obj_method init ; obj_method deinit ;
     
-obj_method final_init ; obj_method final_deinit ; RKStore methods ; RKStore final_methods ; RKStore class_methods ; RKStore final_class_methods ;
+obj_method final_init ; obj_method final_deinit ; RKStore methods ; RKStore final_methods ; RKStore protected_methods ; RKStore final_protected_methods ;
     
-RKStore data ; RKStore private_stores ; obj_classdef the_classdef ; RKList superclass_refs ; } ;
+RKStore class_methods ; RKStore final_class_methods ; RKStore data ; RKStore private_stores ; obj_classdef the_classdef ; RKList superclass_refs ; } ;
 
 struct obj_object_s { void* fast_data_structure ; obj_class class_of_object ; RKStore data ; RKStore refs ; int refcount ; obj_ulong object_id ; } ;
 
@@ -191,6 +191,10 @@ obj_class obj_class_alloc( obj_classdef the_classdef ) {
     
     cls->class_methods = RKStore_NewStore() ;
     
+    cls->final_protected_methods = RKStore_NewStore() ;
+    
+    cls->protected_methods = RKStore_NewStore() ;
+    
     cls->final_methods = RKStore_NewStore() ;
     
     cls->methods = RKStore_NewStore() ;
@@ -220,6 +224,10 @@ void obj_class_dealloc( obj_class cls ) {
     RKStore_DestroyStore(cls->final_class_methods) ;
     
     RKStore_DestroyStore(cls->class_methods) ;
+    
+    RKStore_DestroyStore(cls->final_protected_methods) ;
+    
+    RKStore_DestroyStore(cls->protected_methods) ;
     
     RKStore_DestroyStore(cls->final_methods) ;
     
@@ -293,6 +301,27 @@ obj_method obj_get_method( AnyClass obj, const char* name ) {
     method = RKStore_GetItem(obj->class_of_object->methods, name) ;
     
     if ( method == NULL ) return obj_default_func ;
+    
+    return method ;
+}
+
+void obj_add_protected_method( obj_method method, const char* name, obj_class cls ) {
+    
+    if ( !(RKStore_ItemExists(cls->final_protected_methods, name)) ) RKStore_AddItem(cls->protected_methods, method, name) ;
+}
+
+void obj_add_final_protected_method( const char* name, obj_class cls ) {
+    
+    RKStore_AddItem(cls->final_protected_methods, NULL, name) ;
+}
+
+obj_method obj_get_protected_method( AnyClass obj, obj_class cls, const char* name ) {
+    
+    obj_method method = NULL ;
+    
+    method = RKStore_GetItem(cls->protected_methods, name) ;
+    
+    if ( (method == NULL) || (!is_object_of_class(obj,cls)) ) return obj_default_func ;
     
     return method ;
 }

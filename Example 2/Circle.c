@@ -12,11 +12,13 @@
 
 use_class(Shape) ;
 
+declare_class(Circle) ;
+
 define_data_set(CircleData, float radius ; ) ;
 
 start_method(InitCircle, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(radius, obj_float) arg(cls, obj_class))
 
- cm(obj, InitShape, noargs) ;
+ prm(obj, InitShape, noargs) ;
 
  store_set(CircleData) ;
 
@@ -30,7 +32,7 @@ end_method
 
 start_method(DeinitCircle, arg(cls, obj_class))
 
- cm(obj, DeinitShape, noargs) ;
+ prm(obj, DeinitShape, noargs) ;
 
  destroy_set(CircleData) ;
 

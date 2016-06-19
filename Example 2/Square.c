@@ -10,11 +10,13 @@
 
 use_class(Shape) ;
 
+declare_class(Square) ;
+
 define_data_set(SquareData, float size ; ) ;
 
 start_method(InitSquare, argfromlist(pos_x, obj_float) argfromlist(pos_y, obj_float) argfromlist(size, obj_float) arg(cls, obj_class))
 
- cm(obj, InitShape, noargs) ;
+ prm(obj, InitShape, noargs) ;
 
  store_set(SquareData) ;
 
@@ -28,7 +30,7 @@ end_method
 
 start_method(DeinitSquare, arg(cls, obj_class))
 
- cm(obj, DeinitShape, noargs) ;
+ prm(obj, DeinitShape, noargs) ;
 
  destroy_set(SquareData) ;
 

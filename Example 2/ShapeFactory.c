@@ -14,7 +14,7 @@ use_class(Square) ;
 
 use_class(Rectangle) ;
 
-use_private_class(ShapeFactoryClass) ;
+declare_private_class(ShapeFactoryClass) ;
 
 start_static_method(ShapeFactory, arg(shape, const char*) arg(object, AnyClass*) arg(pos_x, obj_float) arg(pos_y, obj_float) arg(value1, obj_float) arg(value2, obj_float))
 

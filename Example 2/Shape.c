@@ -8,15 +8,17 @@
 
 #include "obj.h"
 
+declare_class(Shape) ;
+
 define_data_set(ShapeData, float pos_x ; float pos_y ; float area ; ) ;
 
-start_class_method(InitShape, )
+start_method(InitShape, )
 
  store_set(ShapeData) ;
 
 end_method
 
-start_class_method(DeinitShape, )
+start_method(DeinitShape, )
 
  destroy_set(ShapeData) ;
 
@@ -56,9 +58,9 @@ end_method
 
 new_class(Shape) {
     
-    make_class_method_public(InitShape) ;
+    make_protected_method(InitShape) ;
     
-    make_class_method_public(DeinitShape) ;
+    make_protected_method(DeinitShape) ;
     
     make_method_mask(get_area, get area) ;
     
