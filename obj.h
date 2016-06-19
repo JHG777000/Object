@@ -64,11 +64,11 @@ typedef void (*obj_classdeinit)(const obj_class cls) ;
 
 #define obj_bitsizeof(type) sizeof(type) * CHAR_BIT
 
-#define alloc_class(classname) Def##classname(2, NULL)
+#define alloc_class(classname) obj_classdef_Def##classname(2, NULL)
 
-#define get_set_cls_for_class(classname,cls,mode) classname##_obj_get_set_cls( cls, mode )
+#define for_runtime_get_set_cls_for_class(classname,cls,mode) classname##_obj_get_set_cls( cls, mode )
 
-#define make_get_set_cls_for_class(classname) static obj_class classname##_obj_get_set_cls( obj_class cls, int mode ) {\
+#define for_runtime_make_get_set_cls_for_class(classname) static obj_class classname##_obj_get_set_cls( obj_class cls, int mode ) {\
 static obj_class the_cls = NULL ;\
 if ( mode ) {\
  if (the_cls == NULL) alloc_class(classname) ;\
@@ -79,15 +79,15 @@ if ( mode ) {\
 return NULL ;\
 }
 
-#define get_class_method_from_class(classname,methodname) obj_get_class_method_from_class_##classname(#methodname)
+#define for_runtime_get_class_method_from_classname(classname,methodname) obj_get_class_method_from_class_##classname(#methodname)
 
-#define make_get_class_method_from_class(classname) obj_method obj_get_class_method_from_class_##classname( const char* methodname ) {\
-return obj_get_class_method(get_set_cls_for_class(classname,NULL,1),methodname) ; \
+#define for_runtime_make_get_class_method_from_class(classname) obj_method obj_get_class_method_from_class_##classname( const char* methodname ) {\
+return obj_get_class_method(for_runtime_get_set_cls_for_class(classname,NULL,1),methodname) ; \
 }
 
 #define new_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class Def##classname( int mode, obj_class subclass ) {\
+obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
  if (mode == -1) {\
@@ -101,23 +101,23 @@ static int count = 0 ;\
  if (mode == 0) {\
   count++ ;\
   if (cls == NULL){\
-   cls = obj_class_alloc(Def##classname) ;\
+   cls = obj_class_alloc(obj_classdef_Def##classname) ;\
    classname##_obj_class_init_method(cls) ;\
-   get_set_cls_for_class(classname,cls,0) ;\
+   for_runtime_get_set_cls_for_class(classname,cls,0) ;\
    }\
  return cls ;\
  }\
  if (mode == 1) {\
-  Def##classname(0, NULL) ;\
+  obj_classdef_Def##classname(0, NULL) ;\
   classname##_obj_class_init_method(subclass) ;\
   obj_add_class_ref_to_subclass( cls, subclass ) ;\
   return subclass ;\
  }\
  if (mode == 2) {\
    if (cls == NULL){\
-    cls = obj_class_alloc(Def##classname) ;\
+    cls = obj_class_alloc(obj_classdef_Def##classname) ;\
     classname##_obj_class_init_method(cls) ;\
-    get_set_cls_for_class(classname,cls,0) ;\
+    for_runtime_get_set_cls_for_class(classname,cls,0) ;\
    }\
   return cls ;\
  }\
@@ -127,7 +127,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_private_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-static obj_class Def##classname( int mode, obj_class subclass ) {\
+static obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -141,23 +141,23 @@ cls = NULL ;\
 if (mode == 0) {\
 count++ ;\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
 if (mode == 1) {\
-Def##classname(0, NULL) ;\
+obj_classdef_Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
 }\
 if (mode == 2) {\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
@@ -167,7 +167,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_final_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class Def##classname( int mode, obj_class subclass ) {\
+obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -181,9 +181,9 @@ cls = NULL ;\
 if (mode == 0) {\
 count++ ;\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
@@ -192,9 +192,9 @@ return NULL ;\
 }\
 if (mode == 2) {\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
@@ -204,7 +204,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_abstract_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class Def##classname( int mode, obj_class subclass ) {\
+obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -218,23 +218,23 @@ cls = NULL ;\
 if (mode == 0) {\
 count++ ;\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return NULL ;\
 }\
 if (mode == 1) {\
-Def##classname(0, NULL) ;\
+obj_classdef_Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
 return subclass ;\
 }\
 if (mode == 2) {\
 if (cls == NULL){\
-cls = obj_class_alloc(Def##classname) ;\
+cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
-get_set_cls_for_class(classname,cls,0) ;\
+for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
 return cls ;\
 }\
@@ -243,21 +243,21 @@ return NULL ;\
 static void classname##_obj_class_init_method(const obj_class cls)
 
 
-#define make_class_subclass_of(superclass) Def##superclass(1, cls)
+#define make_class_subclass_of(superclass) obj_classdef_Def##superclass(1, cls)
 
-#define get_cls_for(class) get_set_cls_for_class(class,NULL,1)
+#define get_cls_for(class) for_runtime_get_set_cls_for_class(class,NULL,1)
 
-#define use_class(classname) obj_class Def##classname( int mode, obj_class subclass ) ; \
+#define use_class(classname) obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) ; \
 obj_method obj_get_class_method_from_class_##classname( const char* methodname ) ;\
 typedef struct Obj##classname##_s* classname
 
 #define declare_class(classname) use_class(classname) ; \
-make_get_set_cls_for_class(classname) \
-make_get_class_method_from_class(classname)
+for_runtime_make_get_set_cls_for_class(classname) \
+for_runtime_make_get_class_method_from_class(classname)
 
 #define declare_private_class(classname) static use_class(classname) ; \
-make_get_set_cls_for_class(classname) \
-make_get_class_method_from_class(classname)
+for_runtime_make_get_set_cls_for_class(classname) \
+for_runtime_make_get_class_method_from_class(classname)
 
 #define use_class_type(classname) typedef struct Obj##classname##_s* classname
 
@@ -293,15 +293,15 @@ make_get_class_method_from_class(classname)
 #define make_class_method_final(methodname) obj_add_final_class_method(#methodname,cls)
 
 
-#define new_object(class,...) (class)obj_object_alloc(Def##class,__VA_ARGS__)
+#define new_object(class,...) (class)obj_object_alloc(obj_classdef_Def##class,__VA_ARGS__)
 
-#define new_any_object(class,...) obj_object_alloc(Def##class,__VA_ARGS__)
+#define new_any_object(class,...) obj_object_alloc(obj_classdef_Def##class,__VA_ARGS__)
 
 #define new_object_with_classdef(classdef,...) obj_object_alloc(classdef,__VA_ARGS__)
 
 #define free_object(obj) obj_object_dealloc((AnyClass)obj)
 
-#define get_classdef(class) Def##class
+#define get_classdef(class) obj_classdef_Def##class
 
 #define get_classdef_from_cls(cls) obj_get_classdef_from_class(cls)
 
@@ -415,6 +415,8 @@ method_args\
 
 #define get_class_method(cls,method) obj_get_class_method(cls,#method)
 
+#define get_class_method_from_classname(classname,methodname) for_runtime_get_class_method_from_classname(classname,methodname)
+
 
 #define method_invoke(obj,method,...) obj_get_method((AnyClass)obj,#method)(NULL,(AnyClass)obj,NULL,__VA_ARGS__)
 #define m(obj,method,...) method_invoke(obj,method,__VA_ARGS__)
@@ -440,10 +442,10 @@ method_args\
 #define protected_method_invoke_with_arglist(obj,method,arglist,...) obj_get_protected_method((AnyClass)obj,cls,#method)(arglist,(AnyClass)obj,NULL,__VA_ARGS__)
 #define prma(obj,method,arglist,...) protected_method_invoke_with_arglist(obj,method,arglist,__VA_ARGS__)
 
-#define class_method_invoke(classname,method,...) ((obj_classmethod)get_class_method_from_class(classname,method))(NULL,__VA_ARGS__)
+#define class_method_invoke(classname,method,...) ((obj_classmethod)get_class_method_from_classname(classname,method))(NULL,__VA_ARGS__)
 #define cm(classname,method,...) class_method_invoke(classname,method,__VA_ARGS__)
 
-#define class_method_invoke_with_arglist(classname,method,arglist,...) ((obj_classmethod)get_class_method_from_class(classname,method))(arglist,__VA_ARGS__)
+#define class_method_invoke_with_arglist(classname,method,arglist,...) ((obj_classmethod)get_class_method_from_classname(classname,method))(arglist,__VA_ARGS__)
 #define cma(classname,method,arglist,...) class_method_invoke_with_arglist(classname,method,arglist,__VA_ARGS__)
 
 #define private_class_method_invoke(method,...) ((obj_classmethod)method)(NULL,__VA_ARGS__)
