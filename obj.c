@@ -56,9 +56,7 @@ void obj_default_classdeinit( const obj_class cls ) {
 
 AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     
-    AnyClass obj = RKMem_NewMemOfType(struct obj_object_s) ;
-    
-    obj->class_of_object = the_classdef(0, NULL) ;
+    AnyClass obj = the_classdef(0, NULL) ;
     
     obj->data = RKStore_NewStore() ;
     
@@ -77,6 +75,15 @@ AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) {
     init(arglist,(AnyClass)obj,NULL,obj->class_of_object) ;
     
     end_arglist(arglist) ;
+    
+    return obj ;
+}
+
+AnyClass obj_new_object( obj_class cls ) {
+    
+    AnyClass obj = RKMem_NewMemOfType(struct obj_object_s) ;
+    
+    obj->class_of_object = cls ;
     
     return obj ;
 }

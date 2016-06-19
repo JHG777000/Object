@@ -28,7 +28,7 @@ typedef struct obj_class_s* obj_class ;
 
 typedef struct obj_object_s* AnyClass ;
 
-typedef obj_class (*obj_classdef)(int mode, obj_class subclass) ;
+typedef AnyClass (*obj_classdef)(int mode, obj_class subclass) ;
 
 typedef struct { void* fast_data_structure ; } *obj_fds_type ;
 
@@ -87,7 +87,7 @@ return obj_get_class_method(for_runtime_get_set_cls_for_class(classname,NULL,1),
 
 #define new_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
+AnyClass obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
  if (mode == -1) {\
@@ -105,13 +105,13 @@ static int count = 0 ;\
    classname##_obj_class_init_method(cls) ;\
    for_runtime_get_set_cls_for_class(classname,cls,0) ;\
    }\
- return cls ;\
+ return obj_new_object(cls) ;\
  }\
  if (mode == 1) {\
   obj_classdef_Def##classname(0, NULL) ;\
   classname##_obj_class_init_method(subclass) ;\
   obj_add_class_ref_to_subclass( cls, subclass ) ;\
-  return subclass ;\
+  return NULL ;\
  }\
  if (mode == 2) {\
    if (cls == NULL){\
@@ -119,7 +119,7 @@ static int count = 0 ;\
     classname##_obj_class_init_method(cls) ;\
     for_runtime_get_set_cls_for_class(classname,cls,0) ;\
    }\
-  return cls ;\
+  return NULL ;\
  }\
 return NULL ;\
 }\
@@ -127,7 +127,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_private_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-static obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
+static AnyClass obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -145,13 +145,13 @@ cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
 for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
-return cls ;\
+return obj_new_object(cls) ;\
 }\
 if (mode == 1) {\
 obj_classdef_Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
-return subclass ;\
+return NULL ;\
 }\
 if (mode == 2) {\
 if (cls == NULL){\
@@ -159,7 +159,7 @@ cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
 for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
-return cls ;\
+return NULL ;\
 }\
 return NULL ;\
 }\
@@ -167,7 +167,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_final_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
+AnyClass obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -185,7 +185,7 @@ cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
 for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
-return cls ;\
+return obj_new_object(cls) ;\
 }\
 if (mode == 1) {\
 return NULL ;\
@@ -196,7 +196,7 @@ cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
 for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
-return cls ;\
+return NULL ;\
 }\
 return NULL ;\
 }\
@@ -204,7 +204,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define new_abstract_class(classname)\
 static void classname##_obj_class_init_method(const obj_class cls) ;\
-obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) {\
+AnyClass obj_classdef_Def##classname( int mode, obj_class subclass ) {\
 static obj_class cls = NULL ;\
 static int count = 0 ;\
 if (mode == -1) {\
@@ -228,7 +228,7 @@ if (mode == 1) {\
 obj_classdef_Def##classname(0, NULL) ;\
 classname##_obj_class_init_method(subclass) ;\
 obj_add_class_ref_to_subclass( cls, subclass ) ;\
-return subclass ;\
+return NULL ;\
 }\
 if (mode == 2) {\
 if (cls == NULL){\
@@ -236,7 +236,7 @@ cls = obj_class_alloc(obj_classdef_Def##classname) ;\
 classname##_obj_class_init_method(cls) ;\
 for_runtime_get_set_cls_for_class(classname,cls,0) ;\
 }\
-return cls ;\
+return NULL ;\
 }\
 return NULL ;\
 }\
@@ -247,7 +247,7 @@ static void classname##_obj_class_init_method(const obj_class cls)
 
 #define get_cls_for(class) for_runtime_get_set_cls_for_class(class,NULL,1)
 
-#define use_class(classname) obj_class obj_classdef_Def##classname( int mode, obj_class subclass ) ; \
+#define use_class(classname) AnyClass obj_classdef_Def##classname( int mode, obj_class subclass ) ; \
 obj_method obj_get_class_method_from_class_##classname( const char* methodname ) ;\
 typedef struct Obj##classname##_s* classname
 
@@ -541,6 +541,8 @@ store_private_record(dataset, dataset##tmp_private)
 obj_long obj_default_func(va_list external_arglist, const AnyClass obj, ...) ;
 
 AnyClass obj_object_alloc( obj_classdef the_classdef, ... ) ;
+
+AnyClass obj_new_object( obj_class cls ) ;
 
 void obj_object_dealloc( AnyClass obj ) ;
 
