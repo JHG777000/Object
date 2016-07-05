@@ -16,7 +16,7 @@
  */
 
 #include "obj.h"
-#include "RKTasks.h"
+#include "RKMath.h"
 
 struct obj_class_s { void* fast_data_structure ; obj_classdeinit classdeinit ; obj_method init ; obj_method deinit ;
     
@@ -32,9 +32,9 @@ typedef struct obj_ref_s* obj_ref ;
 
 static int get_obj_id( void ) {
     
-    static RKT_AtomicInt count = 0 ;
+    static RKMAtomicInt count = 0 ;
     
-    RKTasks_AtomicInc(&count) ;
+    RKMath_AtomicInc(&count) ;
     
     return count ;
 }
